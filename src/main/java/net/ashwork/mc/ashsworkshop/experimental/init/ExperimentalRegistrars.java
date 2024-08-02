@@ -17,7 +17,6 @@ public class ExperimentalRegistrars {
         SUDOKU_MARKING_TYPE.register(modBus);
 
         // Load registry classes
-        MarkingRegistrarAlpha1.register();
         MarkingRegistrar.register();
     }
 }
