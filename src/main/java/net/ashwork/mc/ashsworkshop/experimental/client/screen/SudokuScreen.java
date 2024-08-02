@@ -5,24 +5,21 @@
 
 package net.ashwork.mc.ashsworkshop.experimental.client.screen;
 
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.alpha1.screen.widget.V1SudokuGridWidget;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.alpha2.screen.widget.SudokuGridWidget;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha1.SudokuGrid;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.grid.SudokuGridSettings;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widget.SudokuGridWidget;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGridSettings;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGrid;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
 // TODO: Document
 public class SudokuScreen extends Screen {
 
-    private V1SudokuGridWidget v1GridWidget;
     private SudokuGridWidget gridWidget;
 
-    private static final net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.grid.SudokuGrid DUMMY = new net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.grid.SudokuGrid(
+    private static final SudokuGrid DUMMY = new SudokuGrid(
             Holder.direct(
                     new SudokuGridSettings(9, List.of(
                             new SudokuGridSettings.InitialValue(1, 4, '2'),
@@ -79,19 +76,6 @@ public class SudokuScreen extends Screen {
 
     @Override
     protected void init() {
-        this.v1GridWidget = this.addRenderableWidget(new V1SudokuGridWidget(this.font, SudokuGrid.constructTestGrid(), this.width / 2, this.height / 2, 16, 1, 1f));
         this.gridWidget = this.addRenderableWidget(new SudokuGridWidget(this.font, DUMMY, this.width / 2, this.height / 2, 16, 1, 1f));
-        this.gridWidget.visible = false;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_V) {
-            this.v1GridWidget.visible = !this.v1GridWidget.visible;
-            this.gridWidget.visible = !this.gridWidget.visible;
-            return true;
-        }
-
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

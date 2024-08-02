@@ -1,11 +1,11 @@
 package net.ashwork.mc.ashsworkshop.experimental.init;
 
 import com.mojang.serialization.MapCodec;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking.BoxTintMarkings;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking.CenterMarkings;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking.CornerMarkings;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking.MainMarking;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking.SudokuMarking;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.BoxTintMarkings;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.CenterMarkings;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.CornerMarkings;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.MainMarking;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
 
 import java.util.function.Supplier;
 
