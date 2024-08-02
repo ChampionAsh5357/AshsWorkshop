@@ -1,0 +1,54 @@
+package net.ashwork.mc.ashsworkshop.experimental.game.sudoku.alpha2.box.marking;
+
+import com.mojang.serialization.MapCodec;
+import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
+import net.ashwork.mc.ashsworkshop.experimental.util.WorkshopCodecs;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+
+public class MainMarking extends AbstractSudokuMarking<Character> {
+
+    public static final MapCodec<MainMarking> CODEC = WorkshopCodecs.SUDOKU_VALUE
+            .optionalFieldOf("value")
+            .xmap(
+                    opt -> opt.map(MainMarking::new).orElseGet(MainMarking::new),
+                    marking -> Optional.ofNullable(marking.getValue())
+            );
+
+    @Nullable
+    private Character value;
+
+    public MainMarking() {
+        this.value = null;
+    }
+
+    private MainMarking(@Nullable Character value) {
+        this.value = value;
+    }
+
+    @Nullable
+    public Character getValue() {
+        return this.value;
+    }
+
+    @Override
+    public void mark(Character value) {
+        this.value = this.value == value ? null : value;
+    }
+
+    @Override
+    protected void clearMark() {
+        this.value = null;
+    }
+
+    @Override
+    public boolean containsData() {
+        return this.value != null;
+    }
+
+    @Override
+    public Type<Character, ?> type() {
+        return MarkingRegistrar.MAIN.get();
+    }
+}
