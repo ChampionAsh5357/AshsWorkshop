@@ -14,7 +14,7 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.function.Predicate;
 
-public class CenterMarkingsRenderer implements MarkingRenderer<Character, CenterMarkings> {
+public class CenterMarkingsRenderer implements MarkingRenderer<CenterMarkings> {
 
     @Override
     public boolean render(GuiGraphics graphics, CenterMarkings marking, RenderingCache cache, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
@@ -48,7 +48,7 @@ public class CenterMarkingsRenderer implements MarkingRenderer<Character, Center
     }
 
     @Override
-    public SudokuMarking.Type<Character, CenterMarkings> type() {
+    public SudokuMarking.Type<CenterMarkings> type() {
         return MarkingRegistrar.CENTER.get();
     }
 }

@@ -21,13 +21,13 @@ public class MarkingRendererHandler {
 
     private static final RenderingCache DUMMY = new RenderingCache();
 
-    private final SortedMap<SudokuBoxLayer, Object2ObjectMap<SudokuMarking.Type<?, ?>, MarkingRenderer<?, ?>>> renderers;
+    private final SortedMap<SudokuBoxLayer, Object2ObjectMap<SudokuMarking.Type<?>, MarkingRenderer<?>>> renderers;
 
     public MarkingRendererHandler() {
         this.renderers = new TreeMap<>(Comparator.naturalOrder());
     }
 
-    public <T, M extends SudokuMarking<T>> void registerRenderer(Supplier<MarkingRenderer<T, M>> factory) {
+    public <T extends SudokuMarking> void registerRenderer(Supplier<MarkingRenderer<T>> factory) {
         var renderer = factory.get();
         if (this.renderers.computeIfAbsent(renderer.layer(), l -> new Object2ObjectLinkedOpenHashMap<>()).putIfAbsent(renderer.type(), renderer) != null) {
             throw new IllegalArgumentException("Marking renderer already registered for type: " + ExperimentalWorkshopRegistries.SUDOKU_MARKING_TYPE.getKey(renderer.type()));
@@ -47,8 +47,8 @@ public class MarkingRendererHandler {
         }
     }
 
-    private <T, M extends SudokuMarking<T>> boolean renderMarking(MarkingRenderer<T, M> renderer, GuiGraphics graphics, SudokuBox box, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
-        M marking = box.getMarking(renderer.type());
+    private <T extends SudokuMarking> boolean renderMarking(MarkingRenderer<T> renderer, GuiGraphics graphics, SudokuBox box, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+        T marking = box.getMarking(renderer.type());
         return renderer.render(graphics, marking, DUMMY, font, invalidChecker, x, y, width, height, selectedBorder, margin, locked);
     }
 }

@@ -2,6 +2,7 @@ package net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.chars.Char2ObjectFunction;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,7 +13,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class AbstractMultiMarkings<T extends Comparable<? super T>> extends AbstractSudokuMarking<T> {
+public abstract class AbstractMultiMarkings<T extends Comparable<? super T>> extends AbstractSudokuMarking {
 
     protected static <T extends Comparable<? super T>, M extends AbstractMultiMarkings<T>> MapCodec<M> multiMarkingCodec(Codec<T> elementCodec, Supplier<M> factory, Function<List<T>, M> parser) {
         return elementCodec.listOf().optionalFieldOf("values").xmap(
@@ -41,10 +42,13 @@ public abstract class AbstractMultiMarkings<T extends Comparable<? super T>> ext
         this.values.clear();
     }
 
+    protected abstract T toType(char value);
+
     @Override
-    public void mark(T value) {
-        if (!this.values.add(value)) {
-            this.values.remove(value);
+    public void mark(char value) {
+        T val = this.toType(value);
+        if (!this.values.add(val)) {
+            this.values.remove(val);
         }
     }
 

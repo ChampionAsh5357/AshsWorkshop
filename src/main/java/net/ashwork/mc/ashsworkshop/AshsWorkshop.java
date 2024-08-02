@@ -6,7 +6,6 @@
 package net.ashwork.mc.ashsworkshop;
 
 import net.ashwork.mc.ashsworkshop.init.Registrars;
-import net.ashwork.mc.ashsworkshop.experimental.init.ExperimentalWorkshopRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;

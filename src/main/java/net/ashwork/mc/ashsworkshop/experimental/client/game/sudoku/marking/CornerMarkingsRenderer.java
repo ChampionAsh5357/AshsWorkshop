@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class CornerMarkingsRenderer implements MarkingRenderer<Character, CornerMarkings> {
+public class CornerMarkingsRenderer implements MarkingRenderer<CornerMarkings> {
 
     private static final List<Function<Context, Offset>> POSITIONS = List.of(
             ctx -> new Offset(0, 0, ctx.margin, ctx.margin),
@@ -64,7 +64,7 @@ public class CornerMarkingsRenderer implements MarkingRenderer<Character, Corner
     }
 
     @Override
-    public SudokuMarking.Type<Character, CornerMarkings> type() {
+    public SudokuMarking.Type<CornerMarkings> type() {
         return MarkingRegistrar.CORNER.get();
     }
 

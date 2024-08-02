@@ -5,9 +5,10 @@ import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
 import net.ashwork.mc.ashsworkshop.experimental.util.WorkshopCodecs;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
-public class MainMarking extends AbstractSudokuMarking<Character> {
+public class MainMarking extends AbstractSudokuMarking {
 
     public static final MapCodec<MainMarking> CODEC = WorkshopCodecs.SUDOKU_VALUE
             .optionalFieldOf("value")
@@ -33,8 +34,8 @@ public class MainMarking extends AbstractSudokuMarking<Character> {
     }
 
     @Override
-    public void mark(Character value) {
-        this.value = this.value == value ? null : value;
+    public void mark(char value) {
+        this.value = Objects.equals(this.value, value) ? null : value;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class MainMarking extends AbstractSudokuMarking<Character> {
     }
 
     @Override
-    public Type<Character, ?> type() {
+    public Type<?> type() {
         return MarkingRegistrar.MAIN.get();
     }
 }

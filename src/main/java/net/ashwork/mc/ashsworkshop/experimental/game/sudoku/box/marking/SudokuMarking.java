@@ -4,15 +4,15 @@ import com.mojang.serialization.MapCodec;
 
 import java.util.function.Supplier;
 
-public interface SudokuMarking<T> {
+public interface SudokuMarking {
 
-    void mark(T value);
+    void mark(char value);
 
     boolean clear();
 
     boolean containsData();
 
-    SudokuMarking.Type<T, ?> type();
+    SudokuMarking.Type<?> type();
 
-    record Type<T, M extends SudokuMarking<T>>(Supplier<M> factory, MapCodec<M> codec) {}
+    record Type<T extends SudokuMarking>(Supplier<T> factory, MapCodec<T> codec) {}
 }

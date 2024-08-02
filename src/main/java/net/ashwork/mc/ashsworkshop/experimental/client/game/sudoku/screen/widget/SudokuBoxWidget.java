@@ -8,7 +8,6 @@ package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widge
 import it.unimi.dsi.fastutil.ints.Int2CharArrayMap;
 import net.ashwork.mc.ashsworkshop.experimental.client.ExperimentalAshsWorkshopClient;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.SudokuBox;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -134,7 +133,7 @@ public class SudokuBoxWidget extends AbstractWidget {
                     return true;
                 }
 
-                this.box.markChar((SudokuMarking.Type<Character, ?>) type, codePoint);
+                this.box.mark(type, codePoint);
                 return true;
             }, true);
 

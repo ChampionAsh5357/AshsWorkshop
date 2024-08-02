@@ -19,7 +19,12 @@ public class BoxTintMarkings extends AbstractMultiMarkings<Integer> {
     }
 
     @Override
-    public Type<Integer, ?> type() {
+    public Type<?> type() {
         return MarkingRegistrar.BOX_TINT.get();
+    }
+
+    @Override
+    protected Integer toType(char value) {
+        return 0; // TODO: Create index map
     }
 }

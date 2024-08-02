@@ -8,7 +8,6 @@ package net.ashwork.mc.ashsworkshop.block;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;

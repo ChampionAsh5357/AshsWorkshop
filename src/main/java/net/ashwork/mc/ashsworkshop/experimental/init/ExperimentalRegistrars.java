@@ -10,7 +10,7 @@ public class ExperimentalRegistrars {
     /**
      * The sudoku marking type registrar.
      */
-    static final DeferredRegister<SudokuMarking.Type<?, ?>> SUDOKU_MARKING_TYPE = DeferredRegister.create(ExperimentalWorkshopRegistries.SUDOKU_MARKING_TYPE, AshsWorkshop.ID);
+    static final DeferredRegister<SudokuMarking.Type<?>> SUDOKU_MARKING_TYPE = DeferredRegister.create(ExperimentalWorkshopRegistries.SUDOKU_MARKING_TYPE, AshsWorkshop.ID);
 
     public static void registerRegistrars(IEventBus modBus) {
         // Add registrars

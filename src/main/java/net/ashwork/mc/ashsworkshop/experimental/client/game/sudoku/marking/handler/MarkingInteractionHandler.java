@@ -17,12 +17,12 @@ public class MarkingInteractionHandler {
         this.typeToModifiers = new ArrayList<>();
     }
 
-    public void registerModifiers(SudokuMarking.Type<?, ?> type, int... modifiers) {
+    public void registerModifiers(SudokuMarking.Type<?> type, int... modifiers) {
         this.typeToModifiers.add(new Modifier(type, modifiers));
         this.typeToModifiers.sort(Comparator.naturalOrder());
     }
 
-    public boolean applyModifiers(int modifiers, Predicate<SudokuMarking.Type<?, ?>> apply, boolean reverse) {
+    public boolean applyModifiers(int modifiers, Predicate<SudokuMarking.Type<?>> apply, boolean reverse) {
         for (var mod : (reverse ? this.typeToModifiers.reversed() : this.typeToModifiers)) {
             if (mod.canApply(modifiers) && apply.test(mod.type())) {
                 return true;
@@ -32,9 +32,9 @@ public class MarkingInteractionHandler {
         return false;
     }
 
-    private record Modifier(SudokuMarking.Type<?, ?> type, List<Integer> modifiers) implements Comparable<Modifier> {
+    private record Modifier(SudokuMarking.Type<?> type, List<Integer> modifiers) implements Comparable<Modifier> {
 
-        private Modifier(SudokuMarking.Type<?, ?> type, int... modifiers) {
+        private Modifier(SudokuMarking.Type<?> type, int... modifiers) {
             this(type, IntStream.of(modifiers).boxed().toList());
         }
 

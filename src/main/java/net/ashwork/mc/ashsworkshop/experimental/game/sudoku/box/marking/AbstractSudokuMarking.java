@@ -1,6 +1,6 @@
 package net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking;
 
-public abstract class AbstractSudokuMarking<T> implements SudokuMarking<T> {
+public abstract class AbstractSudokuMarking implements SudokuMarking {
 
     @Override
     public boolean clear() {

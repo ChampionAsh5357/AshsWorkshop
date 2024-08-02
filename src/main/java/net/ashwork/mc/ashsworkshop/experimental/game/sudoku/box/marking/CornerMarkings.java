@@ -19,7 +19,12 @@ public class CornerMarkings extends AbstractMultiMarkings<Character> {
     }
 
     @Override
-    public Type<Character, ?> type() {
+    public Type<?> type() {
         return MarkingRegistrar.CORNER.get();
+    }
+
+    @Override
+    protected Character toType(char value) {
+        return value;
     }
 }

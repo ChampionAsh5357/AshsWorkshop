@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Predicate;
 
-public class MainMarkingRenderer implements MarkingRenderer<Character, MainMarking> {
+public class MainMarkingRenderer implements MarkingRenderer<MainMarking> {
 
     private static final int LOCKED_VALUE = 0xFF000000;
 
@@ -39,7 +39,7 @@ public class MainMarkingRenderer implements MarkingRenderer<Character, MainMarki
     }
 
     @Override
-    public SudokuMarking.Type<Character, MainMarking> type() {
+    public SudokuMarking.Type<MainMarking> type() {
         return MarkingRegistrar.MAIN.get();
     }
 }

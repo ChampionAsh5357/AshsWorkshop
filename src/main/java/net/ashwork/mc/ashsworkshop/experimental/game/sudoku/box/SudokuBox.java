@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class SudokuBox {
 
     public static final Codec<SudokuBox> CODEC = ExperimentalWorkshopRegistries.SUDOKU_MARKING_TYPE.byNameCodec()
-            .dispatch(SudokuMarking::type, (Function<SudokuMarking.Type<?, ?>, MapCodec<? extends SudokuMarking<?>>>) SudokuMarking.Type::codec)
+            .dispatch(SudokuMarking::type, type -> (MapCodec<SudokuMarking>) type.codec())
             .listOf().xmap(SudokuBox::new, SudokuBox::getMarkings);
 
-    private final Map<SudokuMarking.Type<?, ?>, SudokuMarking<?>> markings;
+    private final Map<SudokuMarking.Type<?>, SudokuMarking> markings;
     private final boolean locked;
 
     public SudokuBox() {
@@ -35,12 +35,12 @@ public class SudokuBox {
         }
     }
 
-    public SudokuBox(List<SudokuMarking<?>> markings) {
+    public SudokuBox(List<SudokuMarking> markings) {
         this.markings = markings.stream().collect(Collectors.toMap(SudokuMarking::type, Function.identity()));
         this.locked = false;
     }
 
-    private List<SudokuMarking<?>> getMarkings() {
+    private List<SudokuMarking> getMarkings() {
         // Make sure the marking isn't locked or that the marking is locked but does not contain the main marking
         return this.markings.values().stream().filter(marking -> !this.isLocked() || marking.type() != MarkingRegistrar.MAIN.get())
                 .filter(SudokuMarking::containsData).collect(Collectors.toList());
@@ -53,16 +53,12 @@ public class SudokuBox {
     }
 
     // TODO: Figure out a better solution
-    @Deprecated
-    public <M extends SudokuMarking<Character>> void markChar(SudokuMarking.Type<Character, M> type, Character value) {
+
+    public <T extends SudokuMarking> void mark(SudokuMarking.Type<T> type, char value) {
         this.getMarking(type).mark(value);
     }
 
-    public <T, M extends SudokuMarking<T>> void mark(SudokuMarking.Type<T, M> type, T value) {
-        this.getMarking(type).mark(value);
-    }
-
-    public <T, M extends SudokuMarking<T>> boolean clear(SudokuMarking.Type<T, M> type) {
+    public <T extends SudokuMarking> boolean clear(SudokuMarking.Type<T> type) {
         return this.getMarking(type).clear();
     }
 
@@ -76,8 +72,8 @@ public class SudokuBox {
     }
 
     @SuppressWarnings("unchecked")
-    public <T, M extends SudokuMarking<T>> M getMarking(SudokuMarking.Type<T, M> type) {
-        return (M) markings.computeIfAbsent(type, t -> t.factory().get());
+    public <T extends SudokuMarking> T getMarking(SudokuMarking.Type<T> type) {
+        return (T) markings.computeIfAbsent(type, t -> t.factory().get());
     }
 
     public boolean containsData() {

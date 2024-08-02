@@ -17,8 +17,6 @@ import java.util.List;
 // TODO: Document
 public class SudokuScreen extends Screen {
 
-    private SudokuGridWidget gridWidget;
-
     private static final SudokuGrid DUMMY = new SudokuGrid(
             Holder.direct(
                     new SudokuGridSettings(9, List.of(
@@ -76,6 +74,6 @@ public class SudokuScreen extends Screen {
 
     @Override
     protected void init() {
-        this.gridWidget = this.addRenderableWidget(new SudokuGridWidget(this.font, DUMMY, this.width / 2, this.height / 2, 16, 1, 1f));
+        this.addRenderableWidget(new SudokuGridWidget(this.font, DUMMY, this.width / 2, this.height / 2, 16, 1, 1f));
     }
 }

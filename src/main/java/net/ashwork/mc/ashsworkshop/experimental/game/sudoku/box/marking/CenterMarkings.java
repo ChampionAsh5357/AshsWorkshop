@@ -19,7 +19,12 @@ public class CenterMarkings extends AbstractMultiMarkings<Character> {
     }
 
     @Override
-    public Type<Character, ?> type() {
+    public Type<?> type() {
         return MarkingRegistrar.CENTER.get();
+    }
+
+    @Override
+    protected Character toType(char value) {
+        return value;
     }
 }
