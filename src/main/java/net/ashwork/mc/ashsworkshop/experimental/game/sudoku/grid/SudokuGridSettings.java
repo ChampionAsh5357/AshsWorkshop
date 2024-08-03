@@ -44,6 +44,11 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
                 throw new IllegalArgumentException("Duplicate initial value position (" + value.row() + ", " + value.column() + ")");
             }
         }
+
+        // Once everything is set, validate all constraints
+        this.constraints.stream().filter(constr -> constr.value().validate(this)).findFirst().ifPresent(c -> {
+            throw new IllegalArgumentException("One or more constraints failed on validation.");
+        });
     }
 
     public record InitialValue(int row, int column, Character value) {

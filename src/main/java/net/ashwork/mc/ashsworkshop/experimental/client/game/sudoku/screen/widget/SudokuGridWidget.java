@@ -25,6 +25,7 @@ public class SudokuGridWidget extends AbstractWidget {
     private final int boxLength;
     private final int border;
 
+    // TODO: Currently hardcoded to only nine by nine grids, fix
     public SudokuGridWidget(Font font, SudokuGrid grid, int centerX, int centerY, int boxLength, int border, float margin) {
         super(
                 centerX - (boxLength * 9 + border * 10) / 2, centerY - (boxLength * 9 + border * 10) / 2,
@@ -54,20 +55,18 @@ public class SudokuGridWidget extends AbstractWidget {
         }
 
         this.boxes.forEach(box -> {
-            if (box.getValue() != null) {
-                // Check indexes
-                for (int idx = 0; idx < 9; idx++) {
-                    this.setInvalidBox(box, box.getYIdx() * 9 + idx, box.getValue());
-                    this.setInvalidBox(box, idx * 9 + box.getXIdx(), box.getValue());
-                    this.setInvalidBox(box, (this.getBoxBorderStart(box.getYIdx()) + (idx / 3)) * 9 + this.getBoxBorderStart(box.getXIdx()) + (idx % 3), box.getValue());
-                }
+            var value = box.getValue();
+            if (value != null) {
+                this.grid.applyConstraints(box.getYIdx(), box.getXIdx(), (rowIdx, columnIdx) ->
+                        this.setInvalidBox(box, rowIdx * this.grid.getGridLength() + columnIdx, value)
+                );
             }
         });
     }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(this.font, "A2", 0, 0, 0xFFFFFFFF);
+        guiGraphics.drawString(this.font, "A3", 0, 0, 0xFFFFFFFF);
         guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFFBBBBBB);
         for (int idx = 0; idx < 4; idx++) {
             guiGraphics.fill(this.getX(), this.getY() + (this.boxLength + this.border) * idx * 3, this.getX() + this.getWidth(), this.getY() + (this.boxLength + this.border) * idx * 3 + 1, 0xFF000000);
@@ -140,12 +139,6 @@ public class SudokuGridWidget extends AbstractWidget {
             return true;
         }
         return false;
-    }
-
-    private int getBoxBorderStart(int number) {
-        if (number >= 6) return 6;
-        if (number >= 3) return 3;
-        return 0;
     }
 
     private void setInvalidBox(SudokuBoxWidget box, int index, Character newValue) {
