@@ -52,8 +52,6 @@ public class SudokuBox {
         return marking.getValue();
     }
 
-    // TODO: Figure out a better solution
-
     public <T extends SudokuMarking> void mark(SudokuMarking.Type<T> type, char value) {
         this.getMarking(type).mark(value);
     }
@@ -62,13 +60,8 @@ public class SudokuBox {
         return this.getMarking(type).clear();
     }
 
-    public boolean clearAll() {
-        boolean cleared = false;
-        for (var marking : markings.values()) {
-            cleared |= marking.clear();
-        }
-
-        return cleared;
+    public void clearAll() {
+        this.markings.values().forEach(SudokuMarking::clear);
     }
 
     @SuppressWarnings("unchecked")

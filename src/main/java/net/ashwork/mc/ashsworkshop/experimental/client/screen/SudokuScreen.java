@@ -6,10 +6,15 @@
 package net.ashwork.mc.ashsworkshop.experimental.client.screen;
 
 import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widget.SudokuGridWidget;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.BoxConstraint;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.ColumnConstraint;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.RowConstraint;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGridSettings;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGrid;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -64,6 +69,10 @@ public class SudokuScreen extends Screen {
                             new SudokuGridSettings.InitialValue(9, 3, '3'),
                             new SudokuGridSettings.InitialValue(9, 5, '1'),
                             new SudokuGridSettings.InitialValue(9, 6, '8')
+                    ), HolderSet.direct(
+                            Holder.direct(RowConstraint.INSTANCE),
+                            Holder.direct(ColumnConstraint.INSTANCE),
+                            Holder.direct(new BoxConstraint(3, 3))
                     ))
             )
     );

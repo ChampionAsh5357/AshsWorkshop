@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 // TODO: REWRITE
 public class SudokuGridWidget extends AbstractWidget {
 
+    private final SudokuGrid grid;
     private final List<SudokuBoxWidget> boxes;
     private final Set<SudokuBoxWidget> focused;
     private final Font font;
@@ -29,6 +30,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 centerX - (boxLength * 9 + border * 10) / 2, centerY - (boxLength * 9 + border * 10) / 2,
                 boxLength * 9 + border * 10, boxLength * 9 + border * 10, Component.empty()
         );
+        this.grid = grid;
         this.boxes = new ArrayList<>();
         this.focused = new HashSet<>();
         this.font = font;
@@ -40,7 +42,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 // Initial offset + box length * index + offset for box
                 var box = new SudokuBoxWidget(
                         this.font,
-                        grid.getBox(j + 1, i + 1),
+                        grid.getBox(j, i),
                         this.border + (this.boxLength + this.border) * i,
                         this.border + (this.boxLength + this.border) * j,
                         i, j,
@@ -130,13 +132,9 @@ public class SudokuGridWidget extends AbstractWidget {
                 var newValue = box.getValue();
                 if (!Objects.equals(oldValue, newValue)) {
                     // Values Changed
-
-                    // Check indexes
-                    for (int idx = 0; idx < 9; idx++) {
-                        this.setInvalidBox(box, box.getYIdx() * 9 + idx, newValue);
-                        this.setInvalidBox(box, idx * 9 + box.getXIdx(), newValue);
-                        this.setInvalidBox(box, (this.getBoxBorderStart(box.getYIdx()) + (idx / 3)) * 9 + this.getBoxBorderStart(box.getXIdx()) + (idx % 3), newValue);
-                    }
+                    this.grid.applyConstraints(box.getYIdx(), box.getXIdx(), (rowIdx, columnIdx) ->
+                            this.setInvalidBox(box, rowIdx * this.grid.getGridLength() + columnIdx, newValue)
+                    );
                 }
             });
             return true;

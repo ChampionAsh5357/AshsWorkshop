@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class SudokuGrid {
 
@@ -86,12 +87,16 @@ public class SudokuGrid {
         return this.settings;
     }
 
+    public void applyConstraints(int rowIdx, int columnIdx, BiConsumer<Integer, Integer> constraint) {
+        this.getSettings().value().constraints().forEach(constr -> constr.value().apply(this.getSettings().value(), rowIdx, columnIdx, constraint));
+    }
+
     public int getGridLength() {
         return this.settings.value().gridLength();
     }
 
-    public SudokuBox getBox(int row, int column) {
-        return this.boxes.get((row - 1) * this.getGridLength() + column - 1);
+    public SudokuBox getBox(int rowIdx, int columnIdx) {
+        return this.boxes.get(rowIdx * this.getGridLength() + columnIdx);
     }
 
     public List<BoxIndex> getBoxIndices() {
