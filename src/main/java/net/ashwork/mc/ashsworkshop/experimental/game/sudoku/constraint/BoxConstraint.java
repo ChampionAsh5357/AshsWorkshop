@@ -30,7 +30,7 @@ public record BoxConstraint(int rowSize, int columnSize) implements SudokuConstr
         int boxRowIdx = (rowIdx / this.rowSize) * this.rowSize;
         int boxColumnIdx = (columnIdx / this.columnSize) * this.columnSize;
         for (int idx = 0; idx < settings.gridLength(); idx++) {
-            constraint.accept(boxRowIdx + (idx / this.rowSize), boxColumnIdx + (idx % this.columnSize));
+            constraint.accept(boxRowIdx + (idx / this.columnSize), boxColumnIdx + (idx % this.rowSize));
         }
     }
 

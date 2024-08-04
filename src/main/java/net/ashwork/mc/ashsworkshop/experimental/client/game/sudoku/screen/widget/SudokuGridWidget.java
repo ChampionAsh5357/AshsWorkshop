@@ -1,12 +1,16 @@
 package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widget;
 
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.BoxConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGrid;
+import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,11 +29,14 @@ public class SudokuGridWidget extends AbstractWidget {
     private final int boxLength;
     private final int border;
 
-    // TODO: Currently hardcoded to only nine by nine grids, fix
+    // TODO: Patchy thing until constraint renderers are added
+    @Nullable
+    private final BoxConstraint boxConstraint;
+
     public SudokuGridWidget(Font font, SudokuGrid grid, int centerX, int centerY, int boxLength, int border, float margin) {
         super(
-                centerX - (boxLength * 9 + border * 10) / 2, centerY - (boxLength * 9 + border * 10) / 2,
-                boxLength * 9 + border * 10, boxLength * 9 + border * 10, Component.empty()
+                centerX - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2, centerY - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2,
+                boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1), boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1), Component.empty()
         );
         this.grid = grid;
         this.boxes = new ArrayList<>();
@@ -38,8 +45,13 @@ public class SudokuGridWidget extends AbstractWidget {
         this.boxLength = boxLength;
         this.border = border;
 
-        for (int j = 0; j < 9; j++) {
-            for (int i = 0; i < 9; i++) {
+        // TODO: Remove when renderer is properly set up
+        this.boxConstraint = this.grid.getSettings().value().constraints().stream()
+                .map(Holder::value).filter(constr -> constr.type() == ConstraintRegistrar.BOX.get()).findFirst()
+                .map(BoxConstraint.class::cast).orElse(null);
+
+        for (int j = 0; j < grid.getGridLength(); j++) {
+            for (int i = 0; i < grid.getGridLength(); i++) {
                 // Initial offset + box length * index + offset for box
                 var box = new SudokuBoxWidget(
                         this.font,
@@ -68,9 +80,19 @@ public class SudokuGridWidget extends AbstractWidget {
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.drawString(this.font, "A3", 0, 0, 0xFFFFFFFF);
         guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFFBBBBBB);
-        for (int idx = 0; idx < 4; idx++) {
-            guiGraphics.fill(this.getX(), this.getY() + (this.boxLength + this.border) * idx * 3, this.getX() + this.getWidth(), this.getY() + (this.boxLength + this.border) * idx * 3 + 1, 0xFF000000);
-            guiGraphics.fill(this.getX() + (this.boxLength + this.border) * idx * 3, this.getY(), this.getX() + (this.boxLength + this.border) * idx * 3 + 1, this.getY() + this.getHeight(), 0xFF000000);
+        if (this.boxConstraint != null) {
+            // Horizontal lines
+            var horizontalSkip = this.grid.getGridLength() / this.boxConstraint.columnSize();
+            for (int idx = 0; idx < this.boxConstraint.columnSize() + 1; idx++) {
+                guiGraphics.fill(this.getX(), this.getY() + (this.boxLength + this.border) * idx * horizontalSkip, this.getX() + this.getWidth(), this.getY() + (this.boxLength + this.border) * idx * horizontalSkip + 1, 0xFF000000);
+
+            }
+
+            // Vertical lines
+            var verticalSkip = this.grid.getGridLength() / this.boxConstraint.rowSize();
+            for (int idx = 0; idx < this.boxConstraint.rowSize() + 1; idx++) {
+                guiGraphics.fill(this.getX() + (this.boxLength + this.border) * idx * verticalSkip, this.getY(), this.getX() + (this.boxLength + this.border) * idx * verticalSkip + 1, this.getY() + this.getHeight(), 0xFF000000);
+            }
         }
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX(), this.getY(), 10);

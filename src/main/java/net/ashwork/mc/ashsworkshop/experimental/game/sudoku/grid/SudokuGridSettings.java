@@ -46,7 +46,7 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         }
 
         // Once everything is set, validate all constraints
-        this.constraints.stream().filter(constr -> constr.value().validate(this)).findFirst().ifPresent(c -> {
+        this.constraints.stream().filter(constr -> !constr.value().validate(this)).findFirst().ifPresent(c -> {
             throw new IllegalArgumentException("One or more constraints failed on validation.");
         });
     }
