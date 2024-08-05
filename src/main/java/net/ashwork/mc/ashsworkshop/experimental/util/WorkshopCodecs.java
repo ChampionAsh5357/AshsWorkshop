@@ -4,9 +4,21 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.Util;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 // TODO: Document, implement
 public interface WorkshopCodecs {
+
+    Codec<URI> URI_LINK = Codec.STRING.comapFlatMap(uri -> {
+        try {
+            return DataResult.success(Util.parseAndValidateUntrustedUri(uri));
+        } catch (URISyntaxException e) {
+            return DataResult.error(e::getMessage);
+        }
+    }, URI::toString);
 
     Codec<Character> CHAR_FROM_INT = Codec.intRange(0, 9).xmap(i -> Character.forDigit(i, 10), c -> Character.digit(c, 10));
     Codec<Character> CHAR_FROM_STRING = Codec.STRING.xmap(str -> str.charAt(0), String::valueOf);

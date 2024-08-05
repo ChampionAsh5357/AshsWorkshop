@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.ashwork.mc.ashsworkshop.experimental.attribution.AttributionInfo;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.init.ExperimentalWorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.experimental.util.WorkshopCodecs;
@@ -15,21 +16,24 @@ import net.minecraft.resources.RegistryFileCodec;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
-public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints) {
+public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<AttributionInfo> attribution) {
 
     public static final Codec<SudokuGridSettings> DIRECT_CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.intRange(4, Integer.MAX_VALUE).fieldOf("grid_length").forGetter(settings -> settings.gridLength),
-                    InitialValue.CODEC.listOf().fieldOf("initial_values").forGetter(settings -> settings.initialValues),
-                    SudokuConstraint.LIST_CODEC.fieldOf("constraints").forGetter(settings -> settings.constraints)
+                    Codec.intRange(4, Integer.MAX_VALUE).fieldOf("grid_length").forGetter(SudokuGridSettings::gridLength),
+                    InitialValue.CODEC.listOf().fieldOf("initial_values").forGetter(SudokuGridSettings::initialValues),
+                    SudokuConstraint.LIST_CODEC.fieldOf("constraints").forGetter(SudokuGridSettings::constraints),
+                    AttributionInfo.CODEC.optionalFieldOf("attribution").forGetter(SudokuGridSettings::attribution)
             ).apply(instance, SudokuGridSettings::new)
     );
     public static final Codec<Holder<SudokuGridSettings>> CODEC = RegistryFileCodec.create(ExperimentalWorkshopRegistries.SUDOKU_GRID_KEY, DIRECT_CODEC);
 
-    public SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints) {
+    public SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<AttributionInfo> attribution) {
         this.gridLength = gridLength;
         this.constraints = constraints;
+        this.attribution = attribution;
 
         // TODO: Figure out how to handle better
         var mutable = new ArrayList<>(initialValues);
