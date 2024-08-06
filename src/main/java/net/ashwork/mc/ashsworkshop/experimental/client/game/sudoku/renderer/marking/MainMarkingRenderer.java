@@ -1,21 +1,18 @@
-package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.marking;
+package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.marking;
 
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.RenderingCache;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.SudokuBoxLayer;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.SudokuObjectRenderer;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.MainMarking;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
-import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Predicate;
 
-public class MainMarkingRenderer implements MarkingRenderer<MainMarking> {
+public class MainMarkingRenderer implements SudokuObjectRenderer<MainMarking> {
 
     private static final int LOCKED_VALUE = 0xFF000000;
 
     @Override
-    public boolean render(GuiGraphics graphics, MainMarking marking, RenderingCache cache, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+    public boolean render(GuiGraphics graphics, MainMarking marking, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
         if (marking.getValue() != null) {
             String text = String.valueOf(marking.getValue());
             float textWidth = font.width(text) - 1;
@@ -31,15 +28,5 @@ public class MainMarkingRenderer implements MarkingRenderer<MainMarking> {
         }
 
         return false;
-    }
-
-    @Override
-    public SudokuBoxLayer layer() {
-        return SudokuBoxLayer.MAIN_VALUE;
-    }
-
-    @Override
-    public SudokuMarking.Type<MainMarking> type() {
-        return MarkingRegistrar.MAIN.get();
     }
 }

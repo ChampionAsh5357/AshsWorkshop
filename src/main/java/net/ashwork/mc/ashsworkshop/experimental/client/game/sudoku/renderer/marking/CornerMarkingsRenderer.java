@@ -1,10 +1,7 @@
-package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.marking;
+package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.marking;
 
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.RenderingCache;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.SudokuBoxLayer;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.SudokuObjectRenderer;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.CornerMarkings;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
-import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -12,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class CornerMarkingsRenderer implements MarkingRenderer<CornerMarkings> {
+public class CornerMarkingsRenderer implements SudokuObjectRenderer<CornerMarkings> {
 
     private static final List<Function<Context, Offset>> POSITIONS = List.of(
             ctx -> new Offset(0, 0, ctx.margin, ctx.margin),
@@ -27,7 +24,7 @@ public class CornerMarkingsRenderer implements MarkingRenderer<CornerMarkings> {
     );
 
     @Override
-    public boolean render(GuiGraphics graphics, CornerMarkings marking, RenderingCache cache, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+    public boolean render(GuiGraphics graphics, CornerMarkings marking, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
         if (!locked && !marking.getValues().isEmpty()) {
 
             int count = 0;
@@ -56,16 +53,6 @@ public class CornerMarkingsRenderer implements MarkingRenderer<CornerMarkings> {
         }
 
         return false;
-    }
-
-    @Override
-    public SudokuBoxLayer layer() {
-        return SudokuBoxLayer.MARKINGS;
-    }
-
-    @Override
-    public SudokuMarking.Type<CornerMarkings> type() {
-        return MarkingRegistrar.CORNER.get();
     }
 
     private record Context(int width, int height, float margin, float textWidth, float textHeight) {}

@@ -1,11 +1,11 @@
 package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku;
 
 public enum SudokuBoxLayer {
-    // White background and transparent layer color
+    // White background and transparent layer color (color marking)
     BACKGROUND,
     // If the main value is invalid
     INVALID_MAIN_VALUE_BACKGROUND,
-    // Aesthetics
+    // Aesthetics (constraints as well)
     AESTHETICS,
     // Fog of war
     FOG_OF_WAR,

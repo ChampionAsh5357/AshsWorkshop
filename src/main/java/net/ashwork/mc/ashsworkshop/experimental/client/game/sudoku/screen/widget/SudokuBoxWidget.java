@@ -103,7 +103,7 @@ public class SudokuBoxWidget extends AbstractWidget {
             }
         }
 
-        ExperimentalAshsWorkshopClient.instance().markingRendererHandler().renderLayers(
+        ExperimentalAshsWorkshopClient.instance().sudokuRendererHandler().render(
                 guiGraphics, this.box, this.font, this.invalidValues::containsValue,
                 this.getX(), this.getY(), this.getWidth(), this.getHeight(),
                 this.selectedBorder, this.margin, this.box.isLocked()

@@ -19,6 +19,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 // TODO: Document
 public class SudokuScreen extends Screen {
@@ -74,7 +75,7 @@ public class SudokuScreen extends Screen {
                             Holder.direct(RowConstraint.INSTANCE),
                             Holder.direct(ColumnConstraint.INSTANCE),
                             Holder.direct(new BoxConstraint(3, 3))
-                    ))
+                    ), Optional.empty())
             )
     );
 
@@ -102,7 +103,7 @@ public class SudokuScreen extends Screen {
                             Holder.direct(RowConstraint.INSTANCE),
                             Holder.direct(ColumnConstraint.INSTANCE),
                             Holder.direct(new BoxConstraint(2, 3))
-                    ))
+                    ), Optional.empty())
             )
     );
 
@@ -120,7 +121,7 @@ public class SudokuScreen extends Screen {
                             Holder.direct(RowConstraint.INSTANCE),
                             Holder.direct(ColumnConstraint.INSTANCE),
                             Holder.direct(new BoxConstraint(2, 2))
-                    ))
+                    ), Optional.empty())
             )
     );
 

@@ -1,10 +1,7 @@
-package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.marking;
+package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.marking;
 
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.RenderingCache;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.SudokuBoxLayer;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.renderer.SudokuObjectRenderer;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.CenterMarkings;
-import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
-import net.ashwork.mc.ashsworkshop.experimental.init.MarkingRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -14,10 +11,10 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.function.Predicate;
 
-public class CenterMarkingsRenderer implements MarkingRenderer<CenterMarkings> {
+public class CenterMarkingsRenderer implements SudokuObjectRenderer<CenterMarkings> {
 
     @Override
-    public boolean render(GuiGraphics graphics, CenterMarkings marking, RenderingCache cache, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+    public boolean render(GuiGraphics graphics, CenterMarkings marking, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
         if (!locked && !marking.getValues().isEmpty()) {
             graphics.pose().pushPose();
             MutableComponent centerComponent = Component.empty();
@@ -40,15 +37,5 @@ public class CenterMarkingsRenderer implements MarkingRenderer<CenterMarkings> {
         }
 
         return false;
-    }
-
-    @Override
-    public SudokuBoxLayer layer() {
-        return SudokuBoxLayer.MARKINGS;
-    }
-
-    @Override
-    public SudokuMarking.Type<CenterMarkings> type() {
-        return MarkingRegistrar.CENTER.get();
     }
 }
