@@ -49,6 +49,14 @@ public class SudokuBoxWidget extends AbstractWidget {
         return this.box.isLocked();
     }
 
+    public float getMargin() {
+        return this.margin;
+    }
+
+    public int getSelectedBorder() {
+        return this.selectedBorder;
+    }
+
     public int getIndex() {
         return this.getYIdx() * 9 + this.getXIdx();
     }
@@ -81,33 +89,25 @@ public class SudokuBoxWidget extends AbstractWidget {
         this.selected = true;
     }
 
+    public boolean isSelected() {
+        return this.selected;
+    }
+
+    public SudokuBox box() {
+        return this.box;
+    }
+
+    public Font font() {
+        return this.font;
+    }
+
+    public boolean containsInvalidValue(char value) {
+        return this.invalidValues.containsValue(value);
+    }
+
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // TODO: Render white background or set layer color
-        // TODO: Render invalid value color
-        // TODO: Render Aesthetics
-        // TODO: Render Value if set
-        // TODO: Render markings if value isn't set
-
-        if (this.selected) {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFF69C8EC);
-            guiGraphics.fill(this.getX() + this.selectedBorder, this.getY() + this.selectedBorder, this.getX() + this.getWidth() - this.selectedBorder, this.getY() + this.getHeight() - this.selectedBorder, 0xFFFFFFFF);
-        } else {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFFFFFFFF);
-        }
-        if (this.box.mainValue() != null && this.invalidValues.containsValue(this.box.mainValue().charValue())) {
-            if (this.selected) {
-                guiGraphics.fill(this.getX() + this.selectedBorder, this.getY() + this.selectedBorder, this.getX() + this.getWidth() - this.selectedBorder, this.getY() + this.getHeight() - this.selectedBorder, 0X7FDC574D);
-            } else {
-                guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0X7FDC574D);
-            }
-        }
-
-        ExperimentalAshsWorkshopClient.instance().sudokuRendererHandler().render(
-                guiGraphics, this.box, this.font, this.invalidValues::containsValue,
-                this.getX(), this.getY(), this.getWidth(), this.getHeight(),
-                this.selectedBorder, this.margin, this.box.isLocked()
-        );
+        ExperimentalAshsWorkshopClient.instance().sudokuRendererHandler().render(guiGraphics, this);
     }
 
     @Override

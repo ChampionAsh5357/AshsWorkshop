@@ -9,11 +9,13 @@ import com.google.common.graph.MutableGraph;
 import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.SudokuBoxLayer;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widget.SudokuBoxWidget;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.SudokuBox;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -95,17 +97,17 @@ public class SudokuRendererHandler {
         this.orderedRenderers = builder.build();
     }
 
-    public void render(GuiGraphics graphics, SudokuBox box, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+    public void render(GuiGraphics graphics, SudokuBoxWidget widget) {
         for (var type : this.orderedRenderers) {
-            if (this.renderObject(type, graphics, box, font, invalidChecker, x, y, width, height, selectedBorder, margin, locked)) {
+            if (this.renderObject(type, graphics, widget)) {
                 break;
             }
         }
     }
 
-    private <T, O> boolean renderObject(SudokuObjectRenderer.Type<T, O> type, GuiGraphics graphics, SudokuBox box, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+    private <T, O> boolean renderObject(SudokuObjectRenderer.Type<T, O> type, GuiGraphics graphics, SudokuBoxWidget widget) {
         var renderer = this.getRenderer(type);
-        return renderer.render(graphics, type.get(box), font, invalidChecker, x, y, width, height, selectedBorder, margin, locked);
+        return renderer.render(graphics, type.get(widget), widget.font(), widget::containsInvalidValue, widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.getSelectedBorder(), widget.getMargin(), widget.locked());
     }
 
     @SuppressWarnings("unchecked")
