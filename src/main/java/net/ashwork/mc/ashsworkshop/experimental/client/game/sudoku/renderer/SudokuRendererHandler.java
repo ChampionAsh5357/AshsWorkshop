@@ -98,8 +98,15 @@ public class SudokuRendererHandler {
     }
 
     public void render(GuiGraphics graphics, SudokuBoxWidget widget) {
+        render(graphics, widget, false);
+    }
+
+    public void render(GuiGraphics graphics, SudokuBoxWidget widget, boolean fogOfWar) {
+        Predicate<SudokuObjectRenderer.Type<?, ?>> fowChecker = fogOfWar
+                ? type -> type.layer().ordinal() >= SudokuBoxLayer.FOG_OF_WAR.ordinal()
+                : type -> type.layer() != SudokuBoxLayer.FOG_OF_WAR;
         for (var type : this.orderedRenderers) {
-            if (this.renderObject(type, graphics, widget)) {
+            if (fowChecker.test(type) && this.renderObject(type, graphics, widget)) {
                 break;
             }
         }

@@ -20,8 +20,7 @@ public class SudokuObjectRendererTypes {
         handler.registerRenderer(AshsWorkshop.fromMod("marking_box_tint"), marking(MarkingRegistrar.BOX_TINT.get(), SudokuBoxLayer.BACKGROUND), () -> new BoxTintMarkingsRenderer(0xFFFFFFFF));
         handler.registerRenderer(AshsWorkshop.fromMod("invalid_marking"), marking(MarkingRegistrar.MAIN.get(), SudokuBoxLayer.SELECTION), InvalidMarkingRenderer::new);
         handler.registerRenderer(AshsWorkshop.fromMod("selection"), select(), SelectionRenderer::new);
-
-        var boxTintFog = marking(MarkingRegistrar.BOX_TINT.get(), SudokuBoxLayer.FOG_OF_WAR);
+        handler.registerRenderer(AshsWorkshop.fromMod("marking_box_ting_fow"), marking(MarkingRegistrar.BOX_TINT.get(), SudokuBoxLayer.FOG_OF_WAR), () -> new BoxTintMarkingsRenderer(0xFF404040));
     }
 
     private static SudokuObjectRenderer.Type<Boolean, Boolean> select() {
