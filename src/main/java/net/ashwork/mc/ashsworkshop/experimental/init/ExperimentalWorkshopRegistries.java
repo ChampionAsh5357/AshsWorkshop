@@ -1,6 +1,7 @@
 package net.ashwork.mc.ashsworkshop.experimental.init;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.experimental.attribution.AttributionInfo;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGridSettings;
@@ -20,6 +21,7 @@ public class ExperimentalWorkshopRegistries {
     public static final ResourceKey<Registry<SudokuConstraint.Type<?>>> SUDOKU_CONSTRAINT_TYPE_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_constraint_type"));
     public static final Registry<SudokuConstraint.Type<?>> SUDOKU_CONSTRAINT_TYPE = new RegistryBuilder<>(SUDOKU_CONSTRAINT_TYPE_KEY).create();
     public static final ResourceKey<Registry<SudokuConstraint>> SUDOKU_CONSTRAINT_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_constraint"));
+    public static final ResourceKey<Registry<AttributionInfo.License>> LICENSE_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("license"));
     public static final ResourceKey<Registry<SudokuGridSettings>> SUDOKU_GRID_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_grid"));
 
     public static void registerRegistries(IEventBus modBus) {
@@ -35,5 +37,6 @@ public class ExperimentalWorkshopRegistries {
     private static void newDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(SUDOKU_CONSTRAINT_KEY, SudokuConstraint.DIRECT_CODEC, SudokuConstraint.DIRECT_CODEC);
         event.dataPackRegistry(SUDOKU_GRID_KEY, SudokuGridSettings.DIRECT_CODEC, SudokuGridSettings.DIRECT_CODEC);
+        event.dataPackRegistry(LICENSE_KEY, AttributionInfo.License.DIRECT_CODEC, AttributionInfo.License.DIRECT_CODEC);
     }
 }

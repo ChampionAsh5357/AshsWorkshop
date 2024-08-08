@@ -2,12 +2,16 @@ package net.ashwork.mc.ashsworkshop.experimental.attribution;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
+import net.ashwork.mc.ashsworkshop.experimental.init.ExperimentalWorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.experimental.util.WorkshopCodecs;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.RegistryFileCodec;
 
 import java.net.URI;
 import java.util.Optional;
 
-public record AttributionInfo(String title, String author, Optional<String> description, Optional<URI> url, Optional<License> license) {
+public record AttributionInfo(String title, String author, Optional<String> description, Optional<URI> url, Optional<Holder<License>> license) {
 
     public static final Codec<AttributionInfo> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -19,14 +23,15 @@ public record AttributionInfo(String title, String author, Optional<String> desc
             ).apply(instance, AttributionInfo::new)
     );
 
-    record License(String name, Optional<String> spdx, Optional<URI> url) {
+    public record License(String name, Optional<String> spdx, Optional<URI> url) {
 
-        public static final Codec<License> CODEC = RecordCodecBuilder.create(instance ->
+        public static final Codec<License> DIRECT_CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("name").forGetter(License::name),
                         Codec.STRING.optionalFieldOf("spdx").forGetter(License::spdx),
                         WorkshopCodecs.URI_LINK.optionalFieldOf("url").forGetter(License::url)
                 ).apply(instance, License::new)
         );
+        public static final Codec<Holder<License>> CODEC = RegistryFileCodec.create(ExperimentalWorkshopRegistries.LICENSE_KEY, DIRECT_CODEC);
     }
 }
