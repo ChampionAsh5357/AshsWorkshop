@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -78,7 +79,6 @@ public class SudokuGridWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(this.font, "A3", 0, 0, 0xFFFFFFFF);
         guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFFBBBBBB);
         if (this.boxConstraint != null) {
             // Horizontal lines
@@ -116,8 +116,10 @@ public class SudokuGridWidget extends AbstractWidget {
                 && yClick >= box.getY() && yClick < box.getY() + box.getHeight()
         ).findFirst();
 
-        this.focused.forEach(SudokuBoxWidget::unselect);
-        this.focused.clear();
+        if (!Screen.hasShiftDown()) {
+            this.focused.forEach(SudokuBoxWidget::unselect);
+            this.focused.clear();
+        }
         selectedBox.ifPresent(box -> {
             box.select();
             this.focused.add(box);
