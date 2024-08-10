@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-package net.ashwork.mc.ashsworkshop.experimental.client.screen;
+package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen;
 
 import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widget.SudokuGridWidget;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.BoxConstraint;
@@ -24,6 +24,7 @@ import java.util.Optional;
 // TODO: Document
 public class SudokuScreen extends Screen {
 
+    // TODO: remove dummies and replace with actual screen view
     private static final SudokuGrid DUMMY_9x9 = new SudokuGrid(
             Holder.direct(
                     new SudokuGridSettings(9, List.of(

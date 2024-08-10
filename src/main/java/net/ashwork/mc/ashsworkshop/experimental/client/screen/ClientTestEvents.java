@@ -1,6 +1,7 @@
 package net.ashwork.mc.ashsworkshop.experimental.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.SudokuScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
