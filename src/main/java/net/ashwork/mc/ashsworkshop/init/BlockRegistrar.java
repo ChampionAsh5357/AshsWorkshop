@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
  */
 public class BlockRegistrar {
 
-    public static final DeferredBlock<Block> WORKBENCH = Registrars.registerBlockWithItem(
+    public static final DeferredBlock<Block> WORKBENCH = WorkshopRegistrars.registerBlockWithItem(
             "workbench", () -> new WorkbenchBlock(BlockBehaviour.Properties.of())
     );
 
@@ -26,7 +26,7 @@ public class BlockRegistrar {
      * @return an iterable containing all blocks registered by this mod
      */
     public static Iterable<Block> all() {
-        return Registrars.BLOCK.getEntries().stream()
+        return WorkshopRegistrars.BLOCK.getEntries().stream()
                 .map(DeferredHolder::value).map(Block.class::cast)::iterator;
     }
 

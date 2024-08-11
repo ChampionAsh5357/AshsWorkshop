@@ -5,7 +5,8 @@
 
 package net.ashwork.mc.ashsworkshop;
 
-import net.ashwork.mc.ashsworkshop.init.Registrars;
+import net.ashwork.mc.ashsworkshop.init.WorkshopRegistrars;
+import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -27,7 +28,8 @@ public class AshsWorkshop {
      * @param modBus the mod event bus
      */
     public AshsWorkshop(IEventBus modBus) {
-        Registrars.registerRegistrars(modBus);
+        WorkshopRegistries.registerRegistries(modBus);
+        WorkshopRegistrars.registerRegistrars(modBus);
     }
 
     // TODO: Document

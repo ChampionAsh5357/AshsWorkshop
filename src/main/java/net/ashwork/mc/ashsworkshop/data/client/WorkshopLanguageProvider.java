@@ -6,8 +6,8 @@
 package net.ashwork.mc.ashsworkshop.data.client;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
-import net.ashwork.mc.ashsworkshop.experimental.init.ExperimentalWorkshopRegistries;
-import net.ashwork.mc.ashsworkshop.experimental.init.SudokuGridSettingsRegistrar;
+import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
+import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.data.PackOutput;
@@ -49,7 +49,7 @@ public class WorkshopLanguageProvider extends LanguageProvider {
                     "generated/4x4/" + generatedSudokuDifficulty(0) + "_" + ((i % 3) + 1)
             ), "title"), StringUtils.capitalise(generatedSudokuDifficulty(0)) + " " + ((i % 3) + 1) + " (4x4)");
         }
-        this.add(WorkshopComponents.createFromRegistryKey(ExperimentalWorkshopRegistries.SUDOKU_GRID_KEY, "standard.description"), "Standard sudoku rules apply.");
+        this.add(WorkshopComponents.createFromRegistryKey(WorkshopRegistries.SUDOKU_GRID_KEY, "standard.description"), "Standard sudoku rules apply.");
     }
 
     private static String generatedSudokuDifficulty(int idx) {

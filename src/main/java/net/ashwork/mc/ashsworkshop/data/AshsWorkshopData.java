@@ -9,18 +9,22 @@ import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopBlockStateProvider;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopLanguageProvider;
 import net.ashwork.mc.ashsworkshop.data.server.WorkshopBlockLootSubProvider;
-import net.ashwork.mc.ashsworkshop.experimental.ExperimentalAshsWorkshop;
-import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
+import net.ashwork.mc.ashsworkshop.init.ConstraintRegistrar;
+import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
+import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The data mod entrypoint for the 'ashs_workshop' mod.
@@ -46,7 +50,12 @@ public class AshsWorkshopData {
         // Set variables
         var generator = event.getGenerator();
         var existingFileHelper = event.getExistingFileHelper();
-        var registries = ExperimentalAshsWorkshop.getExperimentalRegistries(event.getLookupProvider(), factory -> addProvider(generator, event.includeServer(), factory));
+        var registries = addProvider(generator, event.includeServer(), output -> new DatapackBuiltinEntriesProvider(
+                output, event.getLookupProvider(), new RegistrySetBuilder()
+                .add(WorkshopRegistries.SUDOKU_CONSTRAINT_KEY, ConstraintRegistrar::bootstrap)
+                .add(WorkshopRegistries.SUDOKU_GRID_KEY, SudokuGridSettingsRegistrar::bootstrap),
+                Set.of(AshsWorkshop.ID)
+        )).getRegistryProvider();
 
         // Client providers
         addProvider(generator, event.includeClient(), WorkshopLanguageProvider::new);

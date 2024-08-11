@@ -1,7 +1,7 @@
 package net.ashwork.mc.ashsworkshop.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.SudokuSelectionScreen;
+import net.ashwork.mc.ashsworkshop.client.sudoku.screen.SudokuSelectionScreen;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;

@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 public class MenuRegistrar {
 
     public static final DeferredHolder<MenuType<?>, MenuType<WorkbenchMenu>> WORKBENCH =
-            Registrars.MENU.register("workbench", () -> new MenuType<>(WorkbenchMenu::new, FeatureFlags.VANILLA_SET));
+            WorkshopRegistrars.MENU.register("workbench", () -> new MenuType<>(WorkbenchMenu::new, FeatureFlags.VANILLA_SET));
 
     /**
      * Loads the registrar class and registers all registry objects.
