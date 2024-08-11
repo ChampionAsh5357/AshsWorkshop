@@ -1,7 +1,7 @@
 package net.ashwork.mc.ashsworkshop.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
-import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.SudokuScreen;
+import net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.SudokuSelectionScreen;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -161,7 +161,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
                 long clickTime = Util.getMillis();
                 if (clickTime - this.lastClickTime < 250L) {
                     // Double click occurred
-                    WorkbenchScreen.this.minecraft.setScreen(new SudokuScreen(Component.empty()));
+                    WorkbenchScreen.this.minecraft.setScreen(new SudokuSelectionScreen(Component.empty(), WorkbenchScreen.this.fullscreen));
                 }
                 this.lastClickTime = clickTime;
             }
