@@ -98,6 +98,41 @@ public class SudokuGridWidget extends AbstractWidget {
         guiGraphics.pose().translate(this.getX(), this.getY(), 10);
         this.boxes.forEach(box -> box.render(guiGraphics, mouseX, mouseY, partialTick));
         guiGraphics.pose().popPose();
+
+        this.grid.getSettings().value().attribution().ifPresent(info -> {
+            guiGraphics.fill(
+                    this.getX() + this.getWidth() + 2, this.getY() + this.getHeight() / 2 - 30,
+                    this.getX() + this.getWidth() + 82, this.getY() + this.getHeight() / 2 + 30,
+                    0xFF658764
+            );
+            guiGraphics.fill(
+                    this.getX() + this.getWidth() + 2, this.getY() + this.getHeight() / 2 - 30,
+                    this.getX() + this.getWidth() + 82, this.getY() + this.getHeight() / 2 - 15,
+                    0xFF691512
+            );
+            var titleSizeX = this.font.width(info.title());
+            var titleSizeY = this.font.lineHeight - 1;
+            guiGraphics.drawString(
+                    this.font, info.title(),
+                    this.getX() + this.getWidth() + 2 + (80 - titleSizeX) / 2, this.getY() + this.getHeight() / 2 - 30 + (15 - titleSizeY) / 2,
+                    0xFFFFFFFF,
+                    false
+            );
+
+            // TODO: Handle text wrapping and scissor
+            info.description().ifPresent(description -> {
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(this.getX() + this.getWidth() + 2 + 2, this.getY() + (float) this.getHeight() / 2 - 15 + 2, 0f);
+                guiGraphics.pose().scale(0.5f, 0.5f, 1f);
+                guiGraphics.drawString(
+                        this.font, description,
+                        0, 0,
+                        0xFFFFFFFF,
+                        false
+                );
+                guiGraphics.pose().popPose();
+            });
+        });
     }
 
     @Override
