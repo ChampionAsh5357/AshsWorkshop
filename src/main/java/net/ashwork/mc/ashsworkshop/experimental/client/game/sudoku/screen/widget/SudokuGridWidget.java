@@ -2,7 +2,7 @@ package net.ashwork.mc.ashsworkshop.experimental.client.game.sudoku.screen.widge
 
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.BoxConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGrid;
-import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
+import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintTypeRegistrar;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -48,7 +48,7 @@ public class SudokuGridWidget extends AbstractWidget {
 
         // TODO: Remove when renderer is properly set up
         this.boxConstraint = this.grid.getSettings().value().constraints().stream()
-                .map(Holder::value).filter(constr -> constr.type() == ConstraintRegistrar.BOX.get()).findFirst()
+                .map(Holder::value).filter(constr -> constr.type() == ConstraintTypeRegistrar.BOX.get()).findFirst()
                 .map(BoxConstraint.class::cast).orElse(null);
 
         for (int j = 0; j < grid.getGridLength(); j++) {

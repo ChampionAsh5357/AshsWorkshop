@@ -2,7 +2,7 @@ package net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint;
 
 import com.mojang.serialization.MapCodec;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGridSettings;
-import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
+import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintTypeRegistrar;
 
 import java.util.function.BiConsumer;
 
@@ -22,6 +22,6 @@ public class ColumnConstraint implements SudokuConstraint {
 
     @Override
     public Type<?> type() {
-        return ConstraintRegistrar.COLUMN.get();
+        return ConstraintTypeRegistrar.COLUMN.get();
     }
 }

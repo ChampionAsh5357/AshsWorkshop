@@ -29,6 +29,8 @@ public class SudokuGrid {
     private final List<SudokuBox> boxes;
 
     public SudokuGrid(Holder<SudokuGridSettings> settings) {
+        settings.value().validate();
+
         this.settings = settings;
         this.boxes = new ArrayList<>(this.getGridLength() * this.getGridLength());
 

@@ -1,4 +1,26 @@
 {
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_4x4_easy_1.title": "Easy 1 (4x4)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_4x4_easy_2.title": "Easy 2 (4x4)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_4x4_easy_3.title": "Easy 3 (4x4)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_easy_1.title": "Easy 1 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_easy_2.title": "Easy 2 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_easy_3.title": "Easy 3 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_hard_1.title": "Hard 1 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_hard_2.title": "Hard 2 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_hard_3.title": "Hard 3 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_medium_1.title": "Medium 1 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_medium_2.title": "Medium 2 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_6x6_medium_3.title": "Medium 3 (6x6)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_easy_1.title": "Easy 1 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_easy_2.title": "Easy 2 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_easy_3.title": "Easy 3 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_hard_1.title": "Hard 1 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_hard_2.title": "Hard 2 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_hard_3.title": "Hard 3 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_medium_1.title": "Medium 1 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_medium_2.title": "Medium 2 (9x9)",
+  "ashs_workshop.sudoku_grid.ashs_workshop.generated_9x9_medium_3.title": "Medium 3 (9x9)",
+  "ashs_workshop.sudoku_grid.standard.description": "Standard sudoku rules apply.",
   "block.ashs_workshop.workbench": "Ash's Workbench",
-  "menu.ashs_workshop.workbench.": "Ash's Workbench"
+  "menu.ashs_workshop.workbench": "Ash's Workbench"
 }

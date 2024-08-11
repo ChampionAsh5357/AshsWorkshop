@@ -9,9 +9,13 @@ import net.ashwork.mc.ashsworkshop.experimental.attribution.AttributionInfo;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
 import net.ashwork.mc.ashsworkshop.experimental.init.ExperimentalWorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.experimental.util.WorkshopCodecs;
+import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.resources.ResourceKey;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,7 +52,9 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
                 throw new IllegalArgumentException("Duplicate initial value position (" + value.row() + ", " + value.column() + ")");
             }
         }
+    }
 
+    public void validate() {
         // Once everything is set, validate all constraints
         this.constraints.stream().filter(constr -> !constr.value().validate(this)).findFirst().ifPresent(c -> {
             throw new IllegalArgumentException("One or more constraints failed on validation.");
@@ -74,6 +80,56 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
 
         public int index(int gridLength) {
             return this.rowIndex() * gridLength + this.columnIndex();
+        }
+    }
+
+    public static Builder builder(ResourceKey<SudokuGridSettings> key, int gridLength) {
+        return new Builder(key, gridLength);
+    }
+
+    public static class Builder {
+
+        private final ResourceKey<SudokuGridSettings> key;
+        private final int gridLength;
+        private final List<InitialValue> initialValues;
+        private HolderSet<SudokuConstraint> constraints;
+        @Nullable
+        private AttributionInfo attribution;
+
+        private Builder(ResourceKey<SudokuGridSettings> key, int gridLength) {
+            this.key = key;
+            this.gridLength = gridLength;
+            this.initialValues = new ArrayList<>();
+        }
+
+        public Builder initialValues(String values) {
+            for (var i = 0; i < values.length(); i++) {
+                var val = values.charAt(i);
+                if (val != ' ') {
+                    this.initialValues.add(new InitialValue((i / this.gridLength) + 1, (i % this.gridLength) + 1, val));
+                }
+            }
+            return this;
+        }
+
+        public Builder constraints(HolderSet<SudokuConstraint> constraints) {
+            this.constraints = constraints;
+            return this;
+        }
+
+        public Builder attribution(String author) {
+            this.attribution = new AttributionInfo(
+                    Component.translatable(WorkshopComponents.createWithSuffix(this.key, "title")),
+                    author,
+                    Optional.of(Component.translatable(WorkshopComponents.createFromRegistryKey(ExperimentalWorkshopRegistries.SUDOKU_GRID_KEY, "standard.description"))),
+                    Optional.empty(),
+                    Optional.empty()
+            );
+            return this;
+        }
+
+        public SudokuGridSettings build() {
+            return new SudokuGridSettings(this.gridLength, this.initialValues, this.constraints, Optional.ofNullable(this.attribution));
         }
     }
 }

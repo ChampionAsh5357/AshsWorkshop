@@ -9,6 +9,8 @@ import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopBlockStateProvider;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopLanguageProvider;
 import net.ashwork.mc.ashsworkshop.data.server.WorkshopBlockLootSubProvider;
+import net.ashwork.mc.ashsworkshop.experimental.ExperimentalAshsWorkshop;
+import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -44,7 +46,7 @@ public class AshsWorkshopData {
         // Set variables
         var generator = event.getGenerator();
         var existingFileHelper = event.getExistingFileHelper();
-        var registries = event.getLookupProvider();
+        var registries = ExperimentalAshsWorkshop.getExperimentalRegistries(event.getLookupProvider(), factory -> addProvider(generator, event.includeServer(), factory));
 
         // Client providers
         addProvider(generator, event.includeClient(), WorkshopLanguageProvider::new);
@@ -59,6 +61,7 @@ public class AshsWorkshopData {
                 ),
                 registries
         ));
+        ConstraintRegistrar.Tags.constraintTags(factory -> addProvider(generator, event.includeServer(), output -> factory.apply(existingFileHelper, registries, output)));
     }
 
     /**

@@ -1,0 +1,35 @@
+{
+  "attribution": {
+    "author": "Generated",
+    "description": {
+      "translate": "ashs_workshop.sudoku_grid.standard.description"
+    },
+    "title": {
+      "translate": "ashs_workshop.sudoku_grid.ashs_workshop.generated_4x4_easy_3.title"
+    }
+  },
+  "constraints": "#ashs_workshop:standard/4x4",
+  "grid_length": 4,
+  "initial_values": [
+    {
+      "column": 1,
+      "row": 1,
+      "value": 4
+    },
+    {
+      "column": 4,
+      "row": 2,
+      "value": 1
+    },
+    {
+      "column": 1,
+      "row": 3,
+      "value": 2
+    },
+    {
+      "column": 4,
+      "row": 4,
+      "value": 3
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.grid.SudokuGridSettings;
-import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintRegistrar;
+import net.ashwork.mc.ashsworkshop.experimental.init.ConstraintTypeRegistrar;
 
 import java.util.function.BiConsumer;
 
@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 public record BoxConstraint(int rowSize, int columnSize) implements SudokuConstraint {
 
     private static final MapCodec<BoxConstraint> SQUARE_SIZE_CODEC = Codec.INT.fieldOf("size")
-            .xmap(size -> new BoxConstraint(size, size), BoxConstraint::rowSize);
+            .xmap(BoxConstraint::new, BoxConstraint::rowSize);
     private static final MapCodec<BoxConstraint> RECTANGLE_SIZE_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     Codec.INT.fieldOf("row_size").forGetter(BoxConstraint::rowSize),
@@ -24,6 +24,10 @@ public record BoxConstraint(int rowSize, int columnSize) implements SudokuConstr
             Either::unwrap,
             Either::left
     );
+
+    public BoxConstraint(int size) {
+        this(size, size);
+    }
 
     @Override
     public void apply(SudokuGridSettings settings, int rowIdx, int columnIdx, BiConsumer<Integer, Integer> constraint) {
@@ -41,6 +45,6 @@ public record BoxConstraint(int rowSize, int columnSize) implements SudokuConstr
 
     @Override
     public Type<?> type() {
-        return ConstraintRegistrar.BOX.get();
+        return ConstraintTypeRegistrar.BOX.get();
     }
 }

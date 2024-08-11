@@ -3,6 +3,8 @@ package net.ashwork.mc.ashsworkshop.experimental.init;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.experimental.game.sudoku.constraint.SudokuConstraint;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -21,6 +23,10 @@ public class ExperimentalRegistrars {
 
         // Load registry classes
         MarkingRegistrar.register();
-        ConstraintRegistrar.register();
+        ConstraintTypeRegistrar.register();
+    }
+
+    static <T> ResourceKey<T> dataKey(ResourceKey<? extends Registry<T>> registryKey, String name) {
+        return ResourceKey.create(registryKey, AshsWorkshop.fromMod(name));
     }
 }
