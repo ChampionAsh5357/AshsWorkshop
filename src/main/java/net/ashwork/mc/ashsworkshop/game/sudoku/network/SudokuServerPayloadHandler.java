@@ -19,9 +19,8 @@ public class SudokuServerPayloadHandler {
             switch (payload.request()) {
                 case PREVIOUSLY_PLAYED_GRIDS ->
                         context.reply(new ClientboundSendPreviouslyPlayedGrids(data.getPlayedGrids(serverPlayer)));
-                case SUDOKU_GRID -> {
-                    context.reply(new BiboundSendPlayerGrid(data.getGrid(serverPlayer, payload.settings().orElseThrow())));
-                }
+                case SUDOKU_GRID ->
+                        context.reply(new BiboundSendPlayerGrid(data.getGrid(serverPlayer, payload.settings().orElseThrow())));
                 default -> throw new IllegalStateException("I have no idea how you got here.");
             }
         }).exceptionally(e -> {
