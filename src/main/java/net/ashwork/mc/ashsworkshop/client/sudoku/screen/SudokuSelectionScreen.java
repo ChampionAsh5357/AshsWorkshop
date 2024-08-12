@@ -14,10 +14,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Set;
+
 public class SudokuSelectionScreen extends Screen {
 
     private static final ResourceLocation SCREEN_BORDER = AshsWorkshop.fromMod("textures/gui/workbench/screen_border.png");
 
+    private final Set<Holder<SudokuGridSettings>> hasPlayed;
     private int screenWidth;
     private int screenHeight;
     private int borderSize;
@@ -26,8 +29,9 @@ public class SudokuSelectionScreen extends Screen {
     private int leftPos;
     private int topPos;
 
-    public SudokuSelectionScreen(Component title, boolean fullscreen) {
+    public SudokuSelectionScreen(Component title, Set<Holder<SudokuGridSettings>> hasPlayed, boolean fullscreen) {
         super(title);
+        this.hasPlayed = hasPlayed;
         this.fullscreen = fullscreen;
     }
 
@@ -84,7 +88,7 @@ public class SudokuSelectionScreen extends Screen {
             super(minecraft, width, height, y, itemHeight);
 
             this.minecraft.level.registryAccess().registryOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).holders()
-                    .forEach(settings -> this.addEntry(new SudokuEntry(settings)));
+                    .forEach(settings -> this.addEntry(new SudokuEntry(settings, SudokuSelectionScreen.this.hasPlayed.contains(settings))));
         }
 
         @Override
@@ -104,10 +108,12 @@ public class SudokuSelectionScreen extends Screen {
         class SudokuEntry extends ObjectSelectionList.Entry<SudokuEntry> {
 
             private final Holder<SudokuGridSettings> settings;
+            private final boolean hasPlayed;
             private long lastClickTime;
 
-            SudokuEntry(Holder<SudokuGridSettings> settings) {
+            SudokuEntry(Holder<SudokuGridSettings> settings, boolean hasPlayed) {
                 this.settings = settings;
+                this.hasPlayed = hasPlayed;
                 this.lastClickTime = 0L;
             }
 

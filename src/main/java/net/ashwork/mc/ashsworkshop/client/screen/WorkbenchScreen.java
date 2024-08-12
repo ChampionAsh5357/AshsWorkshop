@@ -2,6 +2,7 @@ package net.ashwork.mc.ashsworkshop.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.client.sudoku.screen.SudokuSelectionScreen;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.client.ServerboundRequestPlayerGrids;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +14,10 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.Collections;
 
 // TODO: Document
 public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu> {
@@ -26,6 +30,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
     private int borderSize;
     private int taskbarSize;
     private boolean fullscreen;
+    private boolean packetSent;
 
     private int leftPos;
     private int topPos;
@@ -57,6 +62,10 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         this.addRenderableWidget(new Icon(AshsWorkshop.fromMod("workbench/icons/sudoku"), 16, this.leftPos, this.topPos, 24, Component.literal("Sudoku")));
     }
 
+    public boolean isFullscreen() {
+        return this.fullscreen;
+    }
+
     @Override
     public WorkbenchMenu getMenu() {
         return this.menu;
@@ -81,6 +90,10 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.packetSent) {
+            return false;
+        }
+
         for (GuiEventListener guieventlistener : this.children()) {
             if (guieventlistener.mouseClicked(mouseX, mouseY, button)) {
                 this.setFocused(guieventlistener);
@@ -98,6 +111,10 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.packetSent) {
+            return false;
+        }
+
         if (keyCode == GLFW.GLFW_KEY_F) {
             this.fullscreen = !this.fullscreen;
             this.rebuildWidgets();
@@ -161,7 +178,8 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
                 long clickTime = Util.getMillis();
                 if (clickTime - this.lastClickTime < 250L) {
                     // Double click occurred
-                    WorkbenchScreen.this.minecraft.setScreen(new SudokuSelectionScreen(Component.empty(), WorkbenchScreen.this.fullscreen));
+                    PacketDistributor.sendToServer(ServerboundRequestPlayerGrids.INSTANCE);
+                    WorkbenchScreen.this.packetSent = true;
                 }
                 this.lastClickTime = clickTime;
             }
