@@ -17,9 +17,9 @@ public class WorkshopRegistries {
     // Custom Registries TODO: Document
 
     public static final ResourceKey<Registry<SudokuMarking.Type<?>>> SUDOKU_MARKING_TYPE_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_marking_type"));
-    public static final Registry<SudokuMarking.Type<?>> SUDOKU_MARKING_TYPE = new RegistryBuilder<>(SUDOKU_MARKING_TYPE_KEY).create();
+    public static final Registry<SudokuMarking.Type<?>> SUDOKU_MARKING_TYPE = new RegistryBuilder<>(SUDOKU_MARKING_TYPE_KEY).sync(true).create();
     public static final ResourceKey<Registry<SudokuConstraint.Type<?>>> SUDOKU_CONSTRAINT_TYPE_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_constraint_type"));
-    public static final Registry<SudokuConstraint.Type<?>> SUDOKU_CONSTRAINT_TYPE = new RegistryBuilder<>(SUDOKU_CONSTRAINT_TYPE_KEY).create();
+    public static final Registry<SudokuConstraint.Type<?>> SUDOKU_CONSTRAINT_TYPE = new RegistryBuilder<>(SUDOKU_CONSTRAINT_TYPE_KEY).sync(true).create();
     public static final ResourceKey<Registry<SudokuConstraint>> SUDOKU_CONSTRAINT_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_constraint"));
     public static final ResourceKey<Registry<AttributionInfo.License>> LICENSE_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("license"));
     public static final ResourceKey<Registry<SudokuGridSettings>> SUDOKU_GRID_KEY = ResourceKey.createRegistryKey(AshsWorkshop.fromMod("sudoku_grid"));

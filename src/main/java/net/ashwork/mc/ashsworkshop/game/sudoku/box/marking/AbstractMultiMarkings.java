@@ -2,6 +2,9 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.box.marking;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,11 +17,12 @@ import java.util.function.Supplier;
 
 public abstract class AbstractMultiMarkings<T extends Comparable<? super T>> extends AbstractSudokuMarking {
 
-    protected static <T extends Comparable<? super T>, M extends AbstractMultiMarkings<T>> MapCodec<M> multiMarkingCodec(Codec<T> elementCodec, Supplier<M> factory, Function<List<T>, M> parser) {
-        return elementCodec.listOf().optionalFieldOf("values").xmap(
-                opt -> opt.map(parser).orElseGet(factory),
-                marking -> marking.containsData() ? Optional.of(new ArrayList<>(marking.getValues())) : Optional.empty()
-        );
+    protected static <T extends Comparable<? super T>, M extends AbstractMultiMarkings<T>> MapCodec<M> multiMarkingCodec(Codec<T> elementCodec, Function<List<T>, M> parser) {
+        return elementCodec.listOf().fieldOf("values").xmap(parser, marking -> new ArrayList<>(marking.getValues()));
+    }
+
+    protected static <T extends Comparable<? super T>, M extends AbstractMultiMarkings<T>> StreamCodec<ByteBuf, M> multiMarkingStreamCodec(StreamCodec<ByteBuf, T> elementStreamCodec, Function<List<T>, M> parser) {
+        return elementStreamCodec.apply(ByteBufCodecs.list()).map(parser, marking -> new ArrayList<>(marking.getValues()));
     }
 
     private final Set<T> values;
@@ -54,5 +58,10 @@ public abstract class AbstractMultiMarkings<T extends Comparable<? super T>> ext
     @Override
     public boolean containsData() {
         return !this.values.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + this.values;
     }
 }

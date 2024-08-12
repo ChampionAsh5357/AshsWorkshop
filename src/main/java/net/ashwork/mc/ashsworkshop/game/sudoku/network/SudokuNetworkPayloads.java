@@ -2,7 +2,9 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.network;
 
 import net.ashwork.mc.ashsworkshop.client.sudoku.SudokuClientPayloadHandler;
 import net.ashwork.mc.ashsworkshop.game.sudoku.network.client.ServerboundRequestPlayerGrids;
-import net.ashwork.mc.ashsworkshop.game.sudoku.network.server.ClientboundSendPlayerGrids;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.common.BiboundSendPlayerGrid;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.server.ClientboundSendPreviouslyPlayedGrids;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class SudokuNetworkPayloads {
@@ -14,9 +16,17 @@ public class SudokuNetworkPayloads {
                 SudokuServerPayloadHandler::onRequestPlayerGrids
         );
         registrar.playToClient(
-                ClientboundSendPlayerGrids.TYPE,
-                ClientboundSendPlayerGrids.STREAM_CODEC,
+                ClientboundSendPreviouslyPlayedGrids.TYPE,
+                ClientboundSendPreviouslyPlayedGrids.STREAM_CODEC,
                 SudokuClientPayloadHandler::onRequestPlayerGrids
+        );
+        registrar.playBidirectional(
+                BiboundSendPlayerGrid.TYPE,
+                BiboundSendPlayerGrid.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        SudokuClientPayloadHandler::onSendPlayerGrid,
+                        SudokuServerPayloadHandler::onSendPlayerGrid
+                )
         );
     }
 }

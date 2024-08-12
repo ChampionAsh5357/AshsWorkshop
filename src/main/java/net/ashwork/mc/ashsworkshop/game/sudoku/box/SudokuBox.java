@@ -2,9 +2,13 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.box;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.netty.buffer.ByteBuf;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -15,9 +19,15 @@ import java.util.stream.Collectors;
 
 public class SudokuBox {
 
+    @SuppressWarnings("unchecked")
     public static final Codec<SudokuBox> CODEC = WorkshopRegistries.SUDOKU_MARKING_TYPE.byNameCodec()
             .dispatch(SudokuMarking::type, type -> (MapCodec<SudokuMarking>) type.codec())
             .listOf().xmap(SudokuBox::new, SudokuBox::getMarkings);
+    @SuppressWarnings("unchecked")
+    public static final StreamCodec<RegistryFriendlyByteBuf, SudokuBox> STREAM_CODEC = ByteBufCodecs.registry(
+            WorkshopRegistries.SUDOKU_MARKING_TYPE_KEY
+    ).dispatch(SudokuMarking::type, type -> (StreamCodec<? super RegistryFriendlyByteBuf, SudokuMarking>) type.streamCodec())
+            .apply(ByteBufCodecs.list()).map(SudokuBox::new, SudokuBox::getMarkings);
 
     private final Map<SudokuMarking.Type<?>, SudokuMarking> markings;
     private final boolean locked;
@@ -79,5 +89,10 @@ public class SudokuBox {
 
     public void mergeMarkings(SudokuBox box) {
         box.markings.forEach(this.markings::putIfAbsent);
+    }
+
+    @Override
+    public String toString() {
+        return "SudokuBox" + this.markings.entrySet();
     }
 }

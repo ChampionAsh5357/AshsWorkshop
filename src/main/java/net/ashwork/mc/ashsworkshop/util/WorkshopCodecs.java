@@ -4,10 +4,15 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.Util;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
 
 // TODO: Document, implement
 public interface WorkshopCodecs {
@@ -23,6 +28,21 @@ public interface WorkshopCodecs {
     Codec<Character> CHAR_FROM_INT = Codec.intRange(0, 9).xmap(i -> Character.forDigit(i, 10), c -> Character.digit(c, 10));
     Codec<Character> CHAR_FROM_STRING = Codec.STRING.xmap(str -> str.charAt(0), String::valueOf);
     Codec<Character> SUDOKU_VALUE = new AlternativeCodec<>(CHAR_FROM_INT, CHAR_FROM_STRING);
+    StreamCodec<ByteBuf, Character> CHAR_STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public Character decode(ByteBuf buffer) {
+            return buffer.readChar();
+        }
+
+        @Override
+        public void encode(ByteBuf buffer, Character value) {
+            buffer.writeChar(value);
+        }
+    };
+
+    static <B extends ByteBuf, V> StreamCodec.CodecOperation<B, V, Set<V>> setStreamCodec() {
+        return codec -> ByteBufCodecs.collection(HashSet::new, codec);
+    }
 
     record AlternativeCodec<T>(Codec<T> codec, Codec<T> alternative) implements Codec<T> {
         @Override

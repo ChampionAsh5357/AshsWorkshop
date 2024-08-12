@@ -7,8 +7,10 @@ package net.ashwork.mc.ashsworkshop.client.sudoku.screen;
 
 import net.ashwork.mc.ashsworkshop.client.sudoku.screen.widget.SudokuGridWidget;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGrid;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.common.BiboundSendPlayerGrid;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 // TODO: Document
 public class SudokuScreen extends Screen {
@@ -23,5 +25,11 @@ public class SudokuScreen extends Screen {
     @Override
     protected void init() {
         this.addRenderableWidget(new SudokuGridWidget(this.font, this.grid, this.width / 2, this.height / 2, 16, 1, 1f));
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        PacketDistributor.sendToServer(new BiboundSendPlayerGrid(this.grid));
     }
 }

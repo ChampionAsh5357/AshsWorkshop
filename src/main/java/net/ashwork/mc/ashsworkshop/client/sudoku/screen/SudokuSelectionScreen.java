@@ -3,6 +3,7 @@ package net.ashwork.mc.ashsworkshop.client.sudoku.screen;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGrid;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.client.ServerboundRequestPlayerGrids;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
@@ -25,6 +27,7 @@ public class SudokuSelectionScreen extends Screen {
     private int screenHeight;
     private int borderSize;
     private boolean fullscreen;
+    private boolean packetSent;
 
     private int leftPos;
     private int topPos;
@@ -73,7 +76,20 @@ public class SudokuSelectionScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.packetSent) {
+            return false;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.packetSent) {
+            return false;
+        }
+
         if (keyCode == GLFW.GLFW_KEY_F) {
             this.fullscreen = !this.fullscreen;
             this.rebuildWidgets();
@@ -129,6 +145,9 @@ public class SudokuSelectionScreen extends Screen {
                     graphics.drawString(SudokuSelectionScreen.this.font, info.title(), left + 4, top + (height - lineHeight + 1) / 2 - 5, 0xFFFFFFFF, false);
                     graphics.drawString(SudokuSelectionScreen.this.font, "by " + info.author(), left + 4, top + (height - lineHeight + 1) / 2 + 5, 0xFFAAAAAA, false);
                 });
+                var progressText = this.hasPlayed ? "In Progress" : "New";
+                var textLength = SudokuSelectionScreen.this.font.width(progressText);
+                graphics.drawString(SudokuSelectionScreen.this.font, progressText, left + width - textLength - 4, top + (height - lineHeight + 1) / 2, 0xFFFFFFFF, false);
             }
 
             @Override
@@ -137,7 +156,12 @@ public class SudokuSelectionScreen extends Screen {
                     long clickTime = Util.getMillis();
                     if (clickTime - this.lastClickTime < 250L) {
                         // Double click occurred
-                        SudokuList.this.minecraft.setScreen(new SudokuScreen(Component.empty(), new SudokuGrid(this.settings)));
+                        if (this.hasPlayed) {
+                            PacketDistributor.sendToServer(new ServerboundRequestPlayerGrids(settings));
+                            SudokuSelectionScreen.this.packetSent = true;
+                        } else {
+                            SudokuList.this.minecraft.setScreen(new SudokuScreen(Component.empty(), new SudokuGrid(this.settings)));
+                        }
                     }
                     this.lastClickTime = clickTime;
                 }

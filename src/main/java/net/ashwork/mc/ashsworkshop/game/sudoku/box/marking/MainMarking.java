@@ -1,8 +1,12 @@
 package net.ashwork.mc.ashsworkshop.game.sudoku.box.marking;
 
 import com.mojang.serialization.MapCodec;
+import io.netty.buffer.ByteBuf;
 import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
 import net.ashwork.mc.ashsworkshop.util.WorkshopCodecs;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -16,6 +20,7 @@ public class MainMarking extends AbstractSudokuMarking {
                     opt -> opt.map(MainMarking::new).orElseGet(MainMarking::new),
                     marking -> Optional.ofNullable(marking.getValue())
             );
+    public static final StreamCodec<ByteBuf, MainMarking> STREAM_CODEC = WorkshopCodecs.CHAR_STREAM_CODEC.map(MainMarking::new, MainMarking::getValue);
 
     @Nullable
     private Character value;
@@ -51,5 +56,10 @@ public class MainMarking extends AbstractSudokuMarking {
     @Override
     public Type<?> type() {
         return MarkingRegistrar.MAIN.get();
+    }
+
+    @Override
+    public String toString() {
+        return "MainMarking{" + this.value + "}";
     }
 }

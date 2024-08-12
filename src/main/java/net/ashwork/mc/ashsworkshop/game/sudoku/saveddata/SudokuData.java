@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class SudokuData extends SavedData {
 
+    private static final String ID = AshsWorkshop.fromMod("sudoku_grid").toString().replaceAll(":", "_");
     private static final Codec<Map<Holder<SudokuGridSettings>, SudokuGrid>> GRIDS_CODEC = Codec.unboundedMap(SudokuGridSettings.CODEC, SudokuGrid.CODEC);
     private static final Codec<Map<UUID, Map<Holder<SudokuGridSettings>, SudokuGrid>>> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, GRIDS_CODEC);
 
@@ -29,10 +30,7 @@ public class SudokuData extends SavedData {
 
     public static SudokuData init(ServerLevel level) {
         return level.getServer().overworld()
-                .getDataStorage().computeIfAbsent(
-                        new SavedData.Factory<>(SudokuData::new, SudokuData::new),
-                        AshsWorkshop.fromMod("sudoku_grid").toString()
-                );
+                .getDataStorage().computeIfAbsent(new SavedData.Factory<>(SudokuData::new, SudokuData::new), ID);
     }
 
     private SudokuData(CompoundTag tag, HolderLookup.Provider registries) {
@@ -55,6 +53,7 @@ public class SudokuData extends SavedData {
 
     public void updateGrid(ServerPlayer player, SudokuGrid grid) {
         this.getPlayerGrids(player).put(grid.getSettings(), grid);
+        this.setDirty();
     }
 
     public Set<Holder<SudokuGridSettings>> getPlayedGrids(ServerPlayer player) {

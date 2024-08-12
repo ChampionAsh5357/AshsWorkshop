@@ -1,7 +1,6 @@
 package net.ashwork.mc.ashsworkshop.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
-import net.ashwork.mc.ashsworkshop.client.sudoku.screen.SudokuSelectionScreen;
 import net.ashwork.mc.ashsworkshop.game.sudoku.network.client.ServerboundRequestPlayerGrids;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.minecraft.Util;
@@ -16,8 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Collections;
 
 // TODO: Document
 public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu> {
@@ -178,7 +175,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
                 long clickTime = Util.getMillis();
                 if (clickTime - this.lastClickTime < 250L) {
                     // Double click occurred
-                    PacketDistributor.sendToServer(ServerboundRequestPlayerGrids.INSTANCE);
+                    PacketDistributor.sendToServer(new ServerboundRequestPlayerGrids());
                     WorkbenchScreen.this.packetSent = true;
                 }
                 this.lastClickTime = clickTime;

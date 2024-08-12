@@ -12,7 +12,10 @@ import net.ashwork.mc.ashsworkshop.util.WorkshopCodecs;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +36,7 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             ).apply(instance, SudokuGridSettings::new)
     );
     public static final Codec<Holder<SudokuGridSettings>> CODEC = RegistryFileCodec.create(WorkshopRegistries.SUDOKU_GRID_KEY, DIRECT_CODEC);
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<SudokuGridSettings>> STREAM_CODEC = ByteBufCodecs.holderRegistry(WorkshopRegistries.SUDOKU_GRID_KEY);
 
     public SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<AttributionInfo> attribution) {
         this.gridLength = gridLength;
