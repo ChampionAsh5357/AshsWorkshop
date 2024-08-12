@@ -61,6 +61,7 @@ public class SudokuGrid {
     public SudokuGrid(Holder<SudokuGridSettings> settings, List<BoxIndex> boxIndices) {
         this.settings = settings;
         this.boxes = new ArrayList<>(this.getGridLength() * this.getGridLength());
+        boxIndices = new ArrayList<>(boxIndices);
         boxIndices.sort(Comparator.comparingInt(value -> value.index(this.getGridLength())));
 
         Iterator<SudokuGridSettings.InitialValue> initialIter = settings.value().initialValues().iterator();
