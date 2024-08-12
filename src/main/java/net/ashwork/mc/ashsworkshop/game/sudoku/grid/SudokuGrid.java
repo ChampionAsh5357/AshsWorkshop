@@ -129,12 +129,13 @@ public class SudokuGrid {
         return boxIndices;
     }
 
-    public boolean checkSolution() {
+    // TODO: Figure out how to internally validate for finished not validated
+    public SudokuGridSettings.SolutionState checkSolution() {
         StringBuilder builder = new StringBuilder(81);
         for (var box : this.boxes) {
             var marking = box.getMarking(MarkingRegistrar.MAIN.get());
             if (!marking.containsData()) {
-                return false;
+                return SudokuGridSettings.SolutionState.IN_PROGRESS;
             }
             builder.append(marking.getValue());
         }

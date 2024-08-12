@@ -21,13 +21,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Set;
+import java.util.Map;
 
 public class SudokuSelectionScreen extends Screen {
 
     private static final ResourceLocation SCREEN_BORDER = AshsWorkshop.fromMod("textures/gui/workbench/screen_border.png");
 
-    private final Set<Holder<SudokuGridSettings>> hasPlayed;
+    private final Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> hasPlayed;
     private int screenWidth;
     private int screenHeight;
     private int borderSize;
@@ -37,7 +37,7 @@ public class SudokuSelectionScreen extends Screen {
     private int leftPos;
     private int topPos;
 
-    public SudokuSelectionScreen(Component title, Set<Holder<SudokuGridSettings>> hasPlayed, boolean fullscreen) {
+    public SudokuSelectionScreen(Component title, Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> hasPlayed, boolean fullscreen) {
         super(title);
         this.hasPlayed = hasPlayed;
         this.fullscreen = fullscreen;
@@ -109,7 +109,7 @@ public class SudokuSelectionScreen extends Screen {
             super(minecraft, width, height, y, itemHeight);
 
             this.minecraft.level.registryAccess().registryOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).holders()
-                    .forEach(settings -> this.addEntry(new SudokuEntry(settings, SudokuSelectionScreen.this.hasPlayed.contains(settings))));
+                    .forEach(settings -> this.addEntry(new SudokuEntry(settings, SudokuSelectionScreen.this.hasPlayed.getOrDefault(settings, SudokuGridSettings.SolutionState.NEW))));
         }
 
         @Override
@@ -129,12 +129,12 @@ public class SudokuSelectionScreen extends Screen {
         class SudokuEntry extends ObjectSelectionList.Entry<SudokuEntry> {
 
             private final Holder<SudokuGridSettings> settings;
-            private final boolean hasPlayed;
+            private final SudokuGridSettings.SolutionState state;
             private long lastClickTime;
 
-            SudokuEntry(Holder<SudokuGridSettings> settings, boolean hasPlayed) {
+            SudokuEntry(Holder<SudokuGridSettings> settings, SudokuGridSettings.SolutionState state) {
                 this.settings = settings;
-                this.hasPlayed = hasPlayed;
+                this.state = state;
                 this.lastClickTime = 0L;
             }
 
@@ -150,7 +150,7 @@ public class SudokuSelectionScreen extends Screen {
                     graphics.drawString(SudokuSelectionScreen.this.font, info.title(), left + 4, top + (height - lineHeight + 1) / 2 - 5, 0xFFFFFFFF, false);
                     graphics.drawString(SudokuSelectionScreen.this.font, "by " + info.author(), left + 4, top + (height - lineHeight + 1) / 2 + 5, 0xFFAAAAAA, false);
                 });
-                var progressText = this.hasPlayed ? "In Progress" : "New";
+                var progressText = this.state.getDisplayName();
                 var textLength = SudokuSelectionScreen.this.font.width(progressText);
                 graphics.drawString(SudokuSelectionScreen.this.font, progressText, left + width - textLength - 4, top + (height - lineHeight + 1) / 2, 0xFFFFFFFF, false);
             }
@@ -161,7 +161,7 @@ public class SudokuSelectionScreen extends Screen {
                     long clickTime = Util.getMillis();
                     if (clickTime - this.lastClickTime < 250L) {
                         // Double click occurred
-                        if (this.hasPlayed) {
+                        if (this.state.getServerData()) {
                             PacketDistributor.sendToServer(new ServerboundRequestPlayerGrids(settings));
                             SudokuSelectionScreen.this.packetSent = true;
                         } else {

@@ -156,7 +156,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 && yClick >= box.getY() && yClick < box.getY() + box.getHeight()
         ).findFirst();
 
-        if (!Screen.hasShiftDown()) {
+        if (!(Screen.hasShiftDown() || Screen.hasControlDown())) {
             this.focused.forEach(SudokuBoxWidget::unselect);
             this.focused.clear();
         }

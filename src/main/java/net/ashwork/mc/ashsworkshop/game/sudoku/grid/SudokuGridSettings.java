@@ -8,6 +8,7 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.grid;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.ashwork.mc.ashsworkshop.attribution.AttributionInfo;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<String> solutionMD5, Optional<AttributionInfo> attribution) {
@@ -75,8 +77,16 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         });
     }
 
-    public boolean checkSolution(String solution) {
-        return this.solutionMD5.map(md5 -> md5.equals(SudokuGridSettings.getEncryptedSolution(solution))).orElse(false);
+    public boolean hasSolution() {
+        return this.solutionMD5.isPresent();
+    }
+
+    public SolutionState checkSolution(String solution) {
+        return this.solutionMD5.map(
+                md5 -> md5.equals(SudokuGridSettings.getEncryptedSolution(solution))
+                        ? SolutionState.COMPLETE
+                        : SolutionState.IN_PROGRESS
+        ).orElse(SolutionState.FINISHED_NOT_VALIDATED);
     }
 
     private static String getEncryptedSolution(String solution) {
@@ -114,6 +124,7 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         private final ResourceKey<SudokuGridSettings> key;
         private final int gridLength;
         private final List<InitialValue> initialValues;
+        private String initialString;
         private HolderSet<SudokuConstraint> constraints;
         @Nullable
         private AttributionInfo attribution;
@@ -133,6 +144,7 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
                     this.initialValues.add(new InitialValue((i / this.gridLength) + 1, (i % this.gridLength) + 1, val));
                 }
             }
+            this.initialString = values;
             return this;
         }
 
@@ -152,7 +164,16 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             return this;
         }
 
-        public Builder solution(String solution) throws NoSuchAlgorithmException {
+        public Builder solution(String solution) {
+            if (this.initialString != null) {
+                for (var i = 0; i < this.initialString.length(); i++) {
+                    var val = this.initialString.charAt(i);
+                    if (val != ' ' && val != solution.charAt(i)) {
+                        throw new IllegalArgumentException("Solution character '" + solution.charAt(i) + "' at index " + i + "does not match initial value '" + val + "'.");
+                    }
+                }
+            }
+
             return this.solutionMD5(SudokuGridSettings.getEncryptedSolution(solution));
         }
 
@@ -163,6 +184,30 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
 
         public SudokuGridSettings build() {
             return new SudokuGridSettings(this.gridLength, this.initialValues, this.constraints, Optional.ofNullable(this.solutionMD5), Optional.ofNullable(this.attribution));
+        }
+    }
+
+    public enum SolutionState {
+        NEW("New"),
+        IN_PROGRESS("In Progress"),
+        FINISHED_NOT_VALIDATED("Finished"),
+        COMPLETE("Complete");
+
+        public static final Codec<SolutionState> CODEC = Codec.INT.xmap(id -> SolutionState.values()[id], SolutionState::ordinal);
+        public static final StreamCodec<ByteBuf, SolutionState> STREAM_CODEC = ByteBufCodecs.idMapper(id -> SolutionState.values()[id], SolutionState::ordinal);
+
+        private final String displayName;
+
+        SolutionState(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return this.displayName;
+        }
+
+        public boolean getServerData() {
+            return this != NEW;
         }
     }
 }
