@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "net.ashwork.mc.ashsworkshop.mixin",
+    "refmap": "ashs_workshop.refmap.json",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "LightningRodBlockMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
