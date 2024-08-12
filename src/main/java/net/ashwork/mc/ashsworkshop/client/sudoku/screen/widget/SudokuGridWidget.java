@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.client.sudoku.screen.widget;
 
 import net.ashwork.mc.ashsworkshop.game.sudoku.constraint.BoxConstraint;

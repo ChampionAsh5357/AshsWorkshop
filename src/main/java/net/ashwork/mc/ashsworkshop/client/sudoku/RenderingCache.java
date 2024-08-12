@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.client.sudoku;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;

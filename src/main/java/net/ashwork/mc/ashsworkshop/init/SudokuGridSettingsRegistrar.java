@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.init;
 
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;

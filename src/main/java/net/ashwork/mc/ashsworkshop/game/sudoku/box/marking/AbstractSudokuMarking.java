@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.game.sudoku.box.marking;
 
 public abstract class AbstractSudokuMarking implements SudokuMarking {
