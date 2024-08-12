@@ -9,7 +9,7 @@ import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public class SudokuGridSettingsRegistrar {
 
@@ -65,11 +65,10 @@ public class SudokuGridSettingsRegistrar {
                 .initialValues("4      12      3"));
     }
 
-    private static void registerGenerated(BootstrapContext<SudokuGridSettings> bootstrap, String name, int gridLength, Consumer<SudokuGridSettings.Builder> settings) {
+    private static void registerGenerated(BootstrapContext<SudokuGridSettings> bootstrap, String name, int gridLength, UnaryOperator<SudokuGridSettings.Builder> settings) {
         var registryKey = settings(name);
         var builder = SudokuGridSettings.builder(registryKey, gridLength).attribution("Generated");
-        settings.accept(builder);
-        bootstrap.register(registryKey, builder.build());
+        bootstrap.register(registryKey, settings.apply(builder).build());
     }
 
     public static ResourceKey<SudokuGridSettings> settings(String name) {

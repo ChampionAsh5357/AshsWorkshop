@@ -23,29 +23,34 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.ResourceKey;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
-public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<AttributionInfo> attribution) {
+public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<String> solutionMD5, Optional<AttributionInfo> attribution) {
 
     public static final Codec<SudokuGridSettings> DIRECT_CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.intRange(4, Integer.MAX_VALUE).fieldOf("grid_length").forGetter(SudokuGridSettings::gridLength),
                     InitialValue.CODEC.listOf().fieldOf("initial_values").forGetter(SudokuGridSettings::initialValues),
                     SudokuConstraint.LIST_CODEC.fieldOf("constraints").forGetter(SudokuGridSettings::constraints),
+                    Codec.STRING.optionalFieldOf("solution_md5").forGetter(SudokuGridSettings::solutionMD5),
                     AttributionInfo.CODEC.optionalFieldOf("attribution").forGetter(SudokuGridSettings::attribution)
             ).apply(instance, SudokuGridSettings::new)
     );
     public static final Codec<Holder<SudokuGridSettings>> CODEC = RegistryFileCodec.create(WorkshopRegistries.SUDOKU_GRID_KEY, DIRECT_CODEC);
     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<SudokuGridSettings>> STREAM_CODEC = ByteBufCodecs.holderRegistry(WorkshopRegistries.SUDOKU_GRID_KEY);
 
-    public SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<AttributionInfo> attribution) {
+    public SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<String> solutionMD5, Optional<AttributionInfo> attribution) {
         this.gridLength = gridLength;
         this.constraints = constraints;
+        this.solutionMD5 = solutionMD5.map(str -> str.toUpperCase(Locale.ROOT));
         this.attribution = attribution;
 
         // TODO: Figure out how to handle better
@@ -68,6 +73,14 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         this.constraints.stream().filter(constr -> !constr.value().validate(this)).findFirst().ifPresent(c -> {
             throw new IllegalArgumentException("One or more constraints failed on validation.");
         });
+    }
+
+    public boolean checkSolution(String solution) {
+        return this.solutionMD5.map(md5 -> md5.equals(SudokuGridSettings.getEncryptedSolution(solution))).orElse(false);
+    }
+
+    private static String getEncryptedSolution(String solution) {
+        return DigestUtils.md5Hex(solution).toUpperCase(Locale.ROOT);
     }
 
     public record InitialValue(int row, int column, Character value) {
@@ -104,6 +117,8 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         private HolderSet<SudokuConstraint> constraints;
         @Nullable
         private AttributionInfo attribution;
+        @Nullable
+        private String solutionMD5;
 
         private Builder(ResourceKey<SudokuGridSettings> key, int gridLength) {
             this.key = key;
@@ -137,8 +152,17 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             return this;
         }
 
+        public Builder solution(String solution) throws NoSuchAlgorithmException {
+            return this.solutionMD5(SudokuGridSettings.getEncryptedSolution(solution));
+        }
+
+        public Builder solutionMD5(String solutionMD5) {
+            this.solutionMD5 = solutionMD5;
+            return this;
+        }
+
         public SudokuGridSettings build() {
-            return new SudokuGridSettings(this.gridLength, this.initialValues, this.constraints, Optional.ofNullable(this.attribution));
+            return new SudokuGridSettings(this.gridLength, this.initialValues, this.constraints, Optional.ofNullable(this.solutionMD5), Optional.ofNullable(this.attribution));
         }
     }
 }

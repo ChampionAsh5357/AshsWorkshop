@@ -8,6 +8,7 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.grid;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.SudokuBox;
+import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -126,6 +127,19 @@ public class SudokuGrid {
         }
 
         return boxIndices;
+    }
+
+    public boolean checkSolution() {
+        StringBuilder builder = new StringBuilder(81);
+        for (var box : this.boxes) {
+            var marking = box.getMarking(MarkingRegistrar.MAIN.get());
+            if (!marking.containsData()) {
+                return false;
+            }
+            builder.append(marking.getValue());
+        }
+
+        return this.settings.value().checkSolution(builder.toString());
     }
 
     public record BoxIndex(int row, int column, SudokuBox box) {
