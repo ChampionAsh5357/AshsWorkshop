@@ -8,8 +8,8 @@ package net.ashwork.mc.ashsworkshop.data.client;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /**
@@ -30,11 +30,8 @@ public class WorkshopBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        this.simpleBlockWithItem(BlockRegistrar.WORKBENCH.value(),
-                this.models().withExistingParent(
-                        BlockRegistrar.WORKBENCH.getRegisteredName(),
-                        this.blockTexture(Blocks.CRAFTING_TABLE)
-                )
-        );
+        var workbenchModel = this.models().getExistingFile(BlockRegistrar.WORKBENCH.getId().withPrefix(ModelProvider.BLOCK_FOLDER + "/"));
+        this.horizontalBlock(BlockRegistrar.WORKBENCH.value(), workbenchModel);
+        this.simpleBlockItem(BlockRegistrar.WORKBENCH.value(), workbenchModel);
     }
 }

@@ -5,7 +5,9 @@
 
 package net.ashwork.mc.ashsworkshop.init;
 
+import com.mojang.serialization.MapCodec;
 import net.ashwork.mc.ashsworkshop.block.WorkbenchBlock;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -19,6 +21,7 @@ public class BlockRegistrar {
     public static final DeferredBlock<Block> WORKBENCH = WorkshopRegistrars.registerBlockWithItem(
             "workbench", () -> new WorkbenchBlock(BlockBehaviour.Properties.of())
     );
+    public static final Holder<MapCodec<? extends Block>> WORKBENCH_CODEC = WorkshopRegistrars.BLOCK_TYPE.register("workbench", () -> WorkbenchBlock.CODEC);
 
     /**
      * Returns all blocks registered by this mod.

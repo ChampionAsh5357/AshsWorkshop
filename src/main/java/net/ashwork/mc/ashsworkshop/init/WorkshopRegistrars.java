@@ -5,6 +5,7 @@
 
 package net.ashwork.mc.ashsworkshop.init;
 
+import com.mojang.serialization.MapCodec;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.game.sudoku.constraint.SudokuConstraint;
@@ -55,6 +56,7 @@ public class WorkshopRegistrars {
      */
     static final DeferredRegister<SudokuMarking.Type<?>> SUDOKU_MARKING_TYPE = DeferredRegister.create(WorkshopRegistries.SUDOKU_MARKING_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<SudokuConstraint.Type<?>> SUDOKU_CONSTRAINT_TYPE = DeferredRegister.create(WorkshopRegistries.SUDOKU_CONSTRAINT_TYPE, AshsWorkshop.ID);
+    static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPE = DeferredRegister.create(Registries.BLOCK_TYPE, AshsWorkshop.ID);
 
     /**
      * Registers a block with an item.
