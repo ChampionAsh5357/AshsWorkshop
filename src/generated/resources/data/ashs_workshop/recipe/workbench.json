@@ -1,0 +1,6 @@
+{
+  "type": "ashs_workshop:lightning_rod",
+  "group": "workbench",
+  "input": "minecraft:crafting_table",
+  "output": "ashs_workshop:workbench"
+}

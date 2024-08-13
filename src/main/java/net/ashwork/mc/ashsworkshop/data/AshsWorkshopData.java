@@ -9,6 +9,7 @@ import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopBlockStateProvider;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopLanguageProvider;
 import net.ashwork.mc.ashsworkshop.data.server.WorkshopBlockLootSubProvider;
+import net.ashwork.mc.ashsworkshop.data.server.WorkshopRecipeProvider;
 import net.ashwork.mc.ashsworkshop.init.ConstraintRegistrar;
 import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
@@ -70,6 +71,7 @@ public class AshsWorkshopData {
                 ),
                 registries
         ));
+        addProvider(generator, event.includeServer(), output -> new WorkshopRecipeProvider(output, registries));
         ConstraintRegistrar.Tags.constraintTags(factory -> addProvider(generator, event.includeServer(), output -> factory.apply(existingFileHelper, registries, output)));
     }
 

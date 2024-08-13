@@ -6,6 +6,8 @@
 package net.ashwork.mc.ashsworkshop.mixin;
 
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
+import net.ashwork.mc.ashsworkshop.init.RecipeRegistrar;
+import net.ashwork.mc.ashsworkshop.recipe.block.BlockInput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,12 +29,14 @@ public class LightningRodBlockMixin {
         var poweredDirection = state.getValue(LightningRodBlock.FACING).getOpposite();
         if (poweredDirection == Direction.DOWN) {
             var poweredPos = pos.relative(poweredDirection);
-            var powered = level.getBlockState(poweredPos);
+            var input = new BlockInput.Single(level.getBlockState(poweredPos));
+            var holder = level.getServer().getRecipeManager().getRecipeFor(RecipeRegistrar.LIGHTNING_ROD_TYPE.get(), input, level);
+
             // Lightning rod on crafting table
-            if (powered.getBlock() == Blocks.CRAFTING_TABLE) {
+            if (holder.isPresent()) {
                 // Update blocks
                 level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                level.setBlockAndUpdate(poweredPos, BlockRegistrar.WORKBENCH.get().defaultBlockState());
+                level.setBlockAndUpdate(poweredPos, holder.get().value().setState(input, level.registryAccess()));
                 // Spawn particles
                 if (level instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.GUST_EMITTER_SMALL,

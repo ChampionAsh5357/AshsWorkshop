@@ -18,6 +18,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -57,6 +59,8 @@ public class WorkshopRegistrars {
     static final DeferredRegister<SudokuMarking.Type<?>> SUDOKU_MARKING_TYPE = DeferredRegister.create(WorkshopRegistries.SUDOKU_MARKING_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<SudokuConstraint.Type<?>> SUDOKU_CONSTRAINT_TYPE = DeferredRegister.create(WorkshopRegistries.SUDOKU_CONSTRAINT_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPE = DeferredRegister.create(Registries.BLOCK_TYPE, AshsWorkshop.ID);
+    static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(Registries.RECIPE_TYPE, AshsWorkshop.ID);
+    static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, AshsWorkshop.ID);
 
     /**
      * Registers a block with an item.
@@ -83,12 +87,16 @@ public class WorkshopRegistrars {
         MENU.register(modBus);
         SUDOKU_MARKING_TYPE.register(modBus);
         SUDOKU_CONSTRAINT_TYPE.register(modBus);
+        BLOCK_TYPE.register(modBus);
+        RECIPE_TYPE.register(modBus);
+        RECIPE_SERIALIZER.register(modBus);
 
         // Load registry classes
         BlockRegistrar.register();
         MenuRegistrar.register();
         MarkingRegistrar.register();
         ConstraintTypeRegistrar.register();
+        RecipeRegistrar.register();
 
         // Register events
         modBus.addListener(WorkshopRegistrars::buildTabs);
