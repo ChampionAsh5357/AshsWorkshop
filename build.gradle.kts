@@ -21,6 +21,9 @@ internal val modGroupId: String = extra.get("mod_group_id").toString()
 internal val modAuthors: String = extra.get("mod_authors").toString()
 internal val modDescription: String = extra.get("mod_description").toString()
 
+// Integrations
+internal val jeiVersion: String = extra.get("jei_version").toString()
+
 group = modGroupId
 base.archivesName.set(modId.replace('_', '-'))
 version = modVersion
@@ -73,6 +76,14 @@ runs {
 
 repositories {
     mavenLocal()
+    maven {
+        name = "Jared's Maven"
+        url = uri("https://maven.blamejared.com/")
+    }
+    maven {
+        name = "ModMaven"
+        url = uri("https://modmaven.dev")
+    }
 }
 
 configurations {
@@ -90,6 +101,11 @@ configurations {
 dependencies {
     // NeoForge dependency
     implementation(group = "net.neoforged", name = "neoforge", version = neoVersion)
+
+    // JEI Integration
+    compileOnly(group = "mezz.jei", name = "jei-${minecraftVersion}-common-api", version = jeiVersion)
+    compileOnly(group = "mezz.jei", name = "jei-${minecraftVersion}-neoforge-api", version = jeiVersion)
+    localRuntime(group = "mezz.jei", name = "jei-${minecraftVersion}-neoforge", version = jeiVersion)
 }
 
 tasks.withType<ProcessResources> {
