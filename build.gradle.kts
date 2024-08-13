@@ -125,17 +125,6 @@ license {
     include("**/*.java")
 }
 
-//license {
-//    header.setfile("HEADER"))
-//
-//    properties
-//    setProperty("mod_authors", modAuthors)
-//    setProperty("mod_license", modLicense)
-//
-//    include("**/*.java")
-//    exclude("**/*.properties")
-//}
-
 tasks.withType<JavaCompile> {
     // Use the UTF-8 charset for Java compilation
     options.encoding = "UTF-8"
