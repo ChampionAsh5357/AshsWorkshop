@@ -37,17 +37,29 @@ import java.util.EnumMap;
  */
 public class WorkbenchBlock extends HorizontalDirectionalBlock {
 
+    /**
+     * A codec representing a serialized block.
+     */
     public static final MapCodec<WorkbenchBlock> CODEC = simpleCodec(WorkbenchBlock::new);
+    /**
+     * The shape of the block in the north and south directions.
+     */
     private static final VoxelShape SHAPE_NS = Shapes.or(
             Shapes.box(0.0625, 0.375, 0.125, 0.9375, 1, 0.875),
             Shapes.box(0.25, 0.1875, 0.3125, 0.75, 0.375, 0.6875),
             Shapes.box(0, 0, 0, 1, 0.1875, 1)
     );
+    /**
+     * The shape of the block in the east and west directions.
+     */
     private static final VoxelShape SHAPE_EW = Shapes.or(
             Shapes.box(0.125, 0.375, 0.0625, 0.875, 1, 0.9375),
             Shapes.box(0.3125, 0.1875, 0.25, 0.6875, 0.375, 0.75),
             Shapes.box(0, 0, 0, 1, 0.1875, 1)
     );
+    /**
+     * A map of directions to shapes.
+     */
     private static final ImmutableMap<Direction, VoxelShape> SHAPES = ImmutableMap.of(
             Direction.NORTH, SHAPE_NS,
             Direction.SOUTH, SHAPE_NS,

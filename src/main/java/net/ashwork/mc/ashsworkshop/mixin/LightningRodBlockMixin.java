@@ -5,7 +5,6 @@
 
 package net.ashwork.mc.ashsworkshop.mixin;
 
-import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
 import net.ashwork.mc.ashsworkshop.init.RecipeRegistrar;
 import net.ashwork.mc.ashsworkshop.recipe.block.BlockInput;
 import net.minecraft.core.BlockPos;

@@ -5,6 +5,9 @@
 
 package net.ashwork.mc.ashsworkshop.client.sudoku;
 
+/**
+ * A set of layers that define how the sudoku box is rendered.
+ */
 public enum SudokuBoxLayer {
     // White background and transparent layer color (color marking)
     BACKGROUND,

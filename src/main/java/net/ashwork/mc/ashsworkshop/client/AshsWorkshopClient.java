@@ -48,14 +48,23 @@ public class AshsWorkshopClient {
         modBus.addListener(this::registerMenuScreens);
     }
 
+    /**
+     * {@return a static reference to this instance}
+     */
     public static AshsWorkshopClient instance() {
         return _instance;
     }
 
+    /**
+     * {@return the interaction handler for sudoku markings}
+     */
     public MarkingInteractionHandler markingInteractionHandler() {
         return this.miHandler;
     }
 
+    /**
+     * {@return the object renderer handler for sudoku grids}
+     */
     public SudokuRendererHandler sudokuRendererHandler() {
         return this.srHandler;
     }
@@ -75,6 +84,11 @@ public class AshsWorkshopClient {
         });
     }
 
+    /**
+     * Handles logic that should be executed just before the game finishes loading.
+     *
+     * @param event the event instance
+     */
     private void loadComplete(FMLLoadCompleteEvent event) {
         event.enqueueWork(this.srHandler::finalizeOrder);
     }

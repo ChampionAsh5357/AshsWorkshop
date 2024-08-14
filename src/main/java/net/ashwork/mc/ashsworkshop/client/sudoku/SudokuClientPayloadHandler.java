@@ -14,18 +14,33 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+/**
+ * A class that contains the handlers for client-bound payload.
+ */
 public class SudokuClientPayloadHandler {
 
+    /**
+     * Handles the {@link ClientboundSendPreviouslyPlayedGrids} payload.
+     *
+     * @param payload the payload instance
+     * @param context the payload context
+     */
     public static void onRequestPlayerGrids(ClientboundSendPreviouslyPlayedGrids payload, IPayloadContext context) {
         context.enqueueWork(() -> {
+            // Read in previous properties and set screen to sudoku selection
             boolean fullscreen = Minecraft.getInstance().screen instanceof WorkbenchScreen workbench && workbench.isFullscreen();
             Minecraft.getInstance().setScreen(new SudokuSelectionScreen(Component.empty(), payload.settings(), fullscreen));
         });
     }
 
+    /**
+     * Handles the {@link BiboundSendPlayerGrid} payload.
+     *
+     * @param payload the payload instance
+     * @param context the payload context
+     */
     public static void onSendPlayerGrid(BiboundSendPlayerGrid payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Minecraft.getInstance().setScreen(new SudokuScreen(Component.empty(), payload.grid()));
-        });
+        // Set screen to sudoku grid
+        context.enqueueWork(() -> Minecraft.getInstance().setScreen(new SudokuScreen(Component.empty(), payload.grid())));
     }
 }
