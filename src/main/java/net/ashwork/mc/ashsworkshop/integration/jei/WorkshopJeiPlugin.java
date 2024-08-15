@@ -13,13 +13,15 @@ import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
 import net.ashwork.mc.ashsworkshop.init.RecipeRegistrar;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,17 +52,18 @@ public class WorkshopJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        var manager = getSidedRecipeManager();
+        var level = getSidedLevel();
 
         registration.addRecipes(LightningRodRecipeCategory.TYPE,
-                manager == null ? Collections.emptyList()
-                        : manager.getAllRecipesFor(RecipeRegistrar.LIGHTNING_ROD_TYPE.get())
+                level == null ? Collections.emptyList()
+                        : level.getRecipeManager().getAllRecipesFor(RecipeRegistrar.LIGHTNING_ROD_TYPE.get())
                         .stream().filter(recipe -> !recipe.value().isIncomplete()).toList());
     }
 
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
-        registration.register(BLOCK_TYPE, BuiltInRegistries.BLOCK.stream().toList(), BLOCK_HELPER, new BlockIngredientRenderer());
+        registration.register(BLOCK_TYPE, BuiltInRegistries.BLOCK.asLookup()
+                .filterFeatures(getSidedLevel().enabledFeatures()).listElements().map(Holder::value).toList(), BLOCK_HELPER, new BlockIngredientRenderer());
     }
 
     @Override
@@ -73,11 +76,11 @@ public class WorkshopJeiPlugin implements IModPlugin {
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(new ItemStack(BlockRegistrar.WORKBENCH.get())));
     }
 
-    private static RecipeManager getSidedRecipeManager() {
+    @Nullable
+    private static Level getSidedLevel() {
         if (FMLEnvironment.dist.isClient()) {
-            var level = Minecraft.getInstance().level;
-            return level != null ? level.getRecipeManager() : null;
+            return Minecraft.getInstance().level;
         }
-        return ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+        return ServerLifecycleHooks.getCurrentServer().overworld();
     }
 }
