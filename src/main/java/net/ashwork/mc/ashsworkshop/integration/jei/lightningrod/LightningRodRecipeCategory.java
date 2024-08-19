@@ -42,8 +42,7 @@ public class LightningRodRecipeCategory implements IRecipeCategory<LightningRodR
 
     @Override
     public IDrawable getBackground() {
-        // TODO: figure out if this needs to change
-        return this.guiHelper.createBlankDrawable(100, 100);
+        return this.guiHelper.createBlankDrawable(72, 42);
     }
 
     @Nullable
@@ -59,12 +58,12 @@ public class LightningRodRecipeCategory implements IRecipeCategory<LightningRodR
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemStack(new ItemStack(Blocks.LIGHTNING_ROD));
         view.output().ifPresent(out ->  builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(out));
 
-        // TODO: Adjust values as necessary
-        builder.addSlot(RecipeIngredientRole.INPUT, 0, 20)
+        // Draw slot information
+        builder.addSlot(RecipeIngredientRole.INPUT, 6, 24)
                 .addIngredients(WorkshopJeiPlugin.BLOCK_TYPE, recipe.input().stream().map(Holder::value).toList());
-        builder.addSlot(RecipeIngredientRole.CATALYST, 0, 0)
+        builder.addSlot(RecipeIngredientRole.CATALYST, 6, 3)
                 .addIngredient(WorkshopJeiPlugin.BLOCK_TYPE, Blocks.LIGHTNING_ROD);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 48, 14)
                 .addIngredient(WorkshopJeiPlugin.BLOCK_TYPE, recipe.output());
     }
 }
