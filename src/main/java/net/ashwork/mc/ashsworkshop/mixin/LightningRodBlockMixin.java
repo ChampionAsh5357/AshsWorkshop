@@ -25,6 +25,10 @@ public class LightningRodBlockMixin {
 
     @Inject(at = @At("HEAD"), method = "onLightningStrike", cancellable = true)
     public void onLightningStrike(BlockState state, Level level, BlockPos pos, CallbackInfo ci) {
+        if (state.getValue(LightningRodBlock.WATERLOGGED)) {
+            return;
+        }
+
         var poweredDirection = state.getValue(LightningRodBlock.FACING).getOpposite();
         if (poweredDirection == Direction.DOWN) {
             var poweredPos = pos.relative(poweredDirection);
