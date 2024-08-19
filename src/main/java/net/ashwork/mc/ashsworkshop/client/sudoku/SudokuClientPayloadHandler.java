@@ -26,11 +26,9 @@ public class SudokuClientPayloadHandler {
      * @param context the payload context
      */
     public static void onRequestPlayerGrids(ClientboundSendPreviouslyPlayedGrids payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            // Read in previous properties and set screen to sudoku selection
-            boolean fullscreen = Minecraft.getInstance().screen instanceof WorkbenchScreen workbench && workbench.isFullscreen();
-            Minecraft.getInstance().setScreen(new SudokuSelectionScreen(Component.empty(), payload.settings(), fullscreen));
-        });
+        // Read in previous properties and set screen to sudoku selection
+        boolean fullscreen = Minecraft.getInstance().screen instanceof WorkbenchScreen workbench && workbench.isFullscreen();
+        Minecraft.getInstance().setScreen(new SudokuSelectionScreen(Component.empty(), payload.settings(), fullscreen));
     }
 
     /**
@@ -41,6 +39,6 @@ public class SudokuClientPayloadHandler {
      */
     public static void onSendPlayerGrid(BiboundSendPlayerGrid payload, IPayloadContext context) {
         // Set screen to sudoku grid
-        context.enqueueWork(() -> Minecraft.getInstance().setScreen(new SudokuScreen(Component.empty(), payload.grid())));
+        Minecraft.getInstance().setScreen(new SudokuScreen(Component.empty(), payload.grid()));
     }
 }
