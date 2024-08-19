@@ -2,6 +2,7 @@ package net.ashwork.mc.ashsworkshop.integration.jei.lightningrod;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -9,8 +10,10 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.integration.jei.WorkshopJeiPlugin;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -24,6 +27,7 @@ public class LightningRodRecipeCategory implements IRecipeCategory<LightningRodR
             "lightning_rod",
             LightningRodRecipeView.class
     );
+    private static final ResourceLocation SPRITE = AshsWorkshop.fromMod("integration/jei/lightning_rod");
     private final IGuiHelper guiHelper;
 
     public LightningRodRecipeCategory(IGuiHelper helper) {
@@ -49,6 +53,11 @@ public class LightningRodRecipeCategory implements IRecipeCategory<LightningRodR
     @Override
     public IDrawable getIcon() {
         return this.guiHelper.createDrawableItemStack(new ItemStack(Items.LIGHTNING_ROD));
+    }
+
+    @Override
+    public void draw(LightningRodRecipeView recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        guiGraphics.blitSprite(SPRITE, 27, 15, 16, 16);
     }
 
     @Override

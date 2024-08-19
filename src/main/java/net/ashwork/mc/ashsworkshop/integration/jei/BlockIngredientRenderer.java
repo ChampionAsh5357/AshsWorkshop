@@ -13,7 +13,6 @@ public class BlockIngredientRenderer implements IIngredientRenderer<Block> {
 
     @Override
     public void render(GuiGraphics guiGraphics, Block ingredient) {
-        // TODO: Replace with actual block rendering
         guiGraphics.renderItem(new ItemStack(ingredient), 0, 0);
     }
 
