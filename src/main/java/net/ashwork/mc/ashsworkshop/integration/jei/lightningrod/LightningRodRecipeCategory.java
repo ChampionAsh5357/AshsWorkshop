@@ -1,6 +1,5 @@
-package net.ashwork.mc.ashsworkshop.integration.jei;
+package net.ashwork.mc.ashsworkshop.integration.jei.lightningrod;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -8,20 +7,23 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.ashwork.mc.ashsworkshop.init.RecipeRegistrar;
-import net.ashwork.mc.ashsworkshop.recipe.LightningRodRecipe;
+import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.integration.jei.WorkshopJeiPlugin;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: Finish implementing
-public class LightningRodRecipeCategory implements IRecipeCategory<RecipeHolder<LightningRodRecipe>> {
+public class LightningRodRecipeCategory implements IRecipeCategory<LightningRodRecipeView> {
 
-    static final RecipeType<RecipeHolder<LightningRodRecipe>> TYPE = RecipeType.createFromVanilla(RecipeRegistrar.LIGHTNING_ROD_TYPE.get());
+    public static final RecipeType<LightningRodRecipeView> TYPE = RecipeType.create(
+            AshsWorkshop.ID,
+            "lightning_rod",
+            LightningRodRecipeView.class
+    );
     private final IGuiHelper guiHelper;
 
     public LightningRodRecipeCategory(IGuiHelper helper) {
@@ -29,7 +31,7 @@ public class LightningRodRecipeCategory implements IRecipeCategory<RecipeHolder<
     }
 
     @Override
-    public RecipeType<RecipeHolder<LightningRodRecipe>> getRecipeType() {
+    public RecipeType<LightningRodRecipeView> getRecipeType() {
         return TYPE;
     }
 
@@ -51,12 +53,16 @@ public class LightningRodRecipeCategory implements IRecipeCategory<RecipeHolder<
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<LightningRodRecipe> holder, IFocusGroup focuses) {
-        var recipe = holder.value();
+    public void setRecipe(IRecipeLayoutBuilder builder, LightningRodRecipeView view, IFocusGroup focuses) {
+        var recipe = view.recipe();
+        view.input().ifPresent(in ->  builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(in));
+        builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemStack(new ItemStack(Blocks.LIGHTNING_ROD));
+        view.output().ifPresent(out ->  builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(out));
+
         // TODO: Adjust values as necessary
         builder.addSlot(RecipeIngredientRole.INPUT, 0, 20)
                 .addIngredients(WorkshopJeiPlugin.BLOCK_TYPE, recipe.input().stream().map(Holder::value).toList());
-        builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 0, 0)
+        builder.addSlot(RecipeIngredientRole.CATALYST, 0, 0)
                 .addIngredient(WorkshopJeiPlugin.BLOCK_TYPE, Blocks.LIGHTNING_ROD);
         builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
                 .addIngredient(WorkshopJeiPlugin.BLOCK_TYPE, recipe.output());
