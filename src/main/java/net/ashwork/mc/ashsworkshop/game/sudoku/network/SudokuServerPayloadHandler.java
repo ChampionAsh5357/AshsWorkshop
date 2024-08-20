@@ -16,21 +16,21 @@ public class SudokuServerPayloadHandler {
 
     public static void onRequestPlayerGrids(ServerboundRequestPlayerGrids payload, IPayloadContext context) {
         var serverPlayer = (ServerPlayer) context.player();
-        var data = SudokuData.init(serverPlayer.serverLevel());
+        var data = SudokuData.init(serverPlayer);
 
         switch (payload.request()) {
             case PREVIOUSLY_PLAYED_GRIDS ->
-                    context.reply(new ClientboundSendPreviouslyPlayedGrids(data.getPlayedGrids(serverPlayer)));
+                    context.reply(new ClientboundSendPreviouslyPlayedGrids(data.getPlayedGrids()));
             case SUDOKU_GRID ->
-                    context.reply(new BiboundSendPlayerGrid(data.getGrid(serverPlayer, payload.settings().orElseThrow())));
+                    context.reply(new BiboundSendPlayerGrid(data.getGrid(payload.settings().orElseThrow())));
             default -> throw new IllegalStateException("I have no idea how you got here.");
         }
     }
 
     public static void onSendPlayerGrid(BiboundSendPlayerGrid payload, IPayloadContext context) {
         var serverPlayer = (ServerPlayer) context.player();
-        var data = SudokuData.init(serverPlayer.serverLevel());
+        var data = SudokuData.init(serverPlayer);
 
-        data.updateGrid(serverPlayer, payload.grid());
+        data.updateGrid(payload.grid());
     }
 }

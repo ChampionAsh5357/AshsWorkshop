@@ -12,41 +12,37 @@ import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGrid;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SudokuData extends SavedData {
 
-    private static final String ID = AshsWorkshop.fromMod("sudoku_grid").toString().replaceAll(":", "_");
-    private static final Codec<Map<Holder<SudokuGridSettings>, SudokuInfo>> INFO_CODEC = Codec.unboundedMap(SudokuGridSettings.CODEC, SudokuInfo.CODEC);
-    private static final Codec<Map<UUID, Map<Holder<SudokuGridSettings>, SudokuInfo>>> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, INFO_CODEC);
+    private static final String ID = AshsWorkshop.fromMod("sudoku_grid").toString().replaceAll(":", "/");
+    private static final Codec<Map<Holder<SudokuGridSettings>, SudokuInfo>> CODEC = Codec.unboundedMap(SudokuGridSettings.CODEC, SudokuInfo.CODEC);
 
-    private final Map<UUID, Map<Holder<SudokuGridSettings>, SudokuInfo>> grids;
+    private final Map<Holder<SudokuGridSettings>, SudokuInfo> grids;
 
-    public static SudokuData init(ServerLevel level) {
-        return level.getServer().overworld()
-                .getDataStorage().computeIfAbsent(new SavedData.Factory<>(SudokuData::new, SudokuData::new), ID);
+    public static SudokuData init(ServerPlayer player) {
+        return player.getServer().overworld()
+                .getDataStorage().computeIfAbsent(new SavedData.Factory<>(SudokuData::new, SudokuData::new), getPlayerSavedData(player));
+    }
+
+    private static String getPlayerSavedData(ServerPlayer player) {
+        return ID + "/" + player.getUUID();
     }
 
     private SudokuData(CompoundTag tag, HolderLookup.Provider registries) {
         this();
+        // Put all data from the sudoku grid in
         var data = CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag).getOrThrow();
-        data.forEach((uuid, dataGrids) -> {
-            var playerGrids = this.grids.computeIfAbsent(uuid, k -> new HashMap<>());
-            playerGrids.putAll(dataGrids);
-        });
-        this.setDirty();
+        data.forEach((settings, info) -> this.grids.put(settings, info.recheckSolution(this::setDirty)));
     }
 
     private SudokuData() {
@@ -58,22 +54,19 @@ public class SudokuData extends SavedData {
         return CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), this.grids).result().map(CompoundTag.class::cast).orElseThrow();
     }
 
-    public void updateGrid(ServerPlayer player, SudokuGrid grid) {
-        this.getPlayerGrids(player).put(grid.getSettings(), new SudokuInfo(grid));
+    public void updateGrid(SudokuGrid grid) {
+        // Assume that any grid sent back will differ
+        this.grids.put(grid.getSettings(), new SudokuInfo(grid));
         this.setDirty();
     }
 
-    public Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> getPlayedGrids(ServerPlayer player) {
-        return this.grids.getOrDefault(player.getUUID(), Collections.emptyMap()).values().stream()
+    public Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> getPlayedGrids() {
+        return this.grids.values().stream()
                 .collect(Collectors.toMap(info -> info.grid().getSettings(), SudokuInfo::state));
     }
 
-    public SudokuGrid getGrid(ServerPlayer player, Holder<SudokuGridSettings> settings) {
-        return this.grids.get(player.getUUID()).get(settings).grid();
-    }
-
-    private Map<Holder<SudokuGridSettings>, SudokuInfo> getPlayerGrids(ServerPlayer player) {
-        return this.grids.computeIfAbsent(player.getUUID(), u -> new HashMap<>());
+    public SudokuGrid getGrid(Holder<SudokuGridSettings> settings) {
+        return this.grids.get(settings).grid();
     }
 
     public record SudokuInfo(SudokuGrid grid, SudokuGridSettings.SolutionState state) {
@@ -96,6 +89,24 @@ public class SudokuData extends SavedData {
                     && this.grid.getSettings().value().hasSolution()
                     ? grid.checkSolution()
                     : state;
+        }
+
+        private SudokuInfo recheckSolution(Runnable setDirty) {
+            var newState = this.state == SudokuGridSettings.SolutionState.FINISHED_NOT_VALIDATED
+                    // Make sure there is a solution to validate
+                    && this.grid.getSettings().value().hasSolution()
+                    // Check solution
+                    ? this.grid.checkSolution()
+                    // Otherwise return original state
+                    : this.state;
+
+            if (newState != this.state) {
+                // If state differs, set dirty and recreate info
+                setDirty.run();
+                return new SudokuInfo(this.grid, newState);
+            } else {
+                return this;
+            }
         }
     }
 }

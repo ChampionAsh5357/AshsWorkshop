@@ -156,6 +156,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
             int textBoxWidth = this.width - 4;
             int textBoxHeight = 4;
 
+            // Handle text scaling
             FormattedCharSequence centerText = this.getMessage().getVisualOrderText();
             float textWidth = WorkbenchScreen.this.font.width(centerText) - 1;
             float textHeight = WorkbenchScreen.this.font.lineHeight - 2;
