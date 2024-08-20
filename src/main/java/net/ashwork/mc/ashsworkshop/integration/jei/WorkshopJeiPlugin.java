@@ -12,18 +12,17 @@ import net.ashwork.mc.ashsworkshop.init.RecipeRegistrar;
 import net.ashwork.mc.ashsworkshop.integration.jei.lightningrod.LightningRodRecipeCategory;
 import net.ashwork.mc.ashsworkshop.integration.jei.lightningrod.LightningRodRecipeView;
 import net.ashwork.mc.ashsworkshop.recipe.LightningRodRecipe;
+import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 // TODO: Figure out how to handle without adding all blocks twice
@@ -32,18 +31,8 @@ public class WorkshopJeiPlugin implements IModPlugin {
 
     private static final ResourceLocation PLUGIN_ID = AshsWorkshop.fromMod("integration/jei");
 
-    public static final IIngredientType<Block> BLOCK_TYPE = new IIngredientType<>() {
-        @Override
-        public Class<? extends Block> getIngredientClass() {
-            return Block.class;
-        }
-
-        @Override
-        public String getUid() {
-            return RecipeRegistrar.LIGHTNING_ROD_TYPE.get().toString();
-        }
-    };
-    static final IIngredientHelper<Block> BLOCK_HELPER = new BlockStackHelper();
+    public static final IIngredientType<BlockPredicate> BLOCK_PREDICATE_TYPE = () -> BlockPredicate.class;
+    static final IIngredientHelper<BlockPredicate> BLOCK_PREDICATE_HELPER = new BlockPredicateStackHelper();
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -58,20 +47,7 @@ public class WorkshopJeiPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
-        var enabledFeatures = getSidedLevel().enabledFeatures();
-        List<Block> allNonItemBlocks = lightningRodRecipes().flatMap(recipe -> {
-            List<Block> blocks = new ArrayList<>();
-            recipe.input().forEach(block -> {
-                if (block.value().asItem() == Items.AIR) {
-                    blocks.add(block.value());
-                }
-            });
-            if (recipe.output().asItem() == Items.AIR) {
-                blocks.add(recipe.output());
-            }
-            return blocks.stream();
-        }).filter(block -> block.isEnabled(enabledFeatures)).toList();
-        registration.register(BLOCK_TYPE, allNonItemBlocks, BLOCK_HELPER, new BlockIngredientRenderer());
+        registration.register(BLOCK_PREDICATE_TYPE, Collections.emptyList(), BLOCK_PREDICATE_HELPER, new BlockPredicateIngredientRenderer());
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
+import net.ashwork.mc.ashsworkshop.integration.util.IntegrationComponents;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -33,6 +34,7 @@ public class WorkshopLanguageProvider extends LanguageProvider {
         this.addBlock(BlockRegistrar.WORKBENCH, "Ash's Workbench");
 
         this.add(WorkshopComponents.WORKBENCH_MENU_KEY, "Ash's Workbench");
+        this.add(WorkshopComponents.LIGHTNING_ROD_RECIPE_TYPE_KEY, "Lightning Rod");
 
         for (int i = 0; i < 9; i++) {
             this.add(WorkshopComponents.createWithSuffix(SudokuGridSettingsRegistrar.settings(
@@ -50,6 +52,9 @@ public class WorkshopLanguageProvider extends LanguageProvider {
             ), "title"), StringUtils.capitalise(generatedSudokuDifficulty(0)) + " " + ((i % 3) + 1) + " (4x4)");
         }
         this.add(WorkshopComponents.createFromRegistryKey(WorkshopRegistries.SUDOKU_GRID_KEY, "standard.description"), "Standard sudoku rules apply.");
+
+        // Integration
+        this.add(IntegrationComponents.LIGHTNING_STRIKE_KEY, "Lightning Strike");
     }
 
     private static String generatedSudokuDifficulty(int idx) {

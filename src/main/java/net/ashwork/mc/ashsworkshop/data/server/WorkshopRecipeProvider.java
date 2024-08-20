@@ -2,6 +2,7 @@ package net.ashwork.mc.ashsworkshop.data.server;
 
 import net.ashwork.mc.ashsworkshop.data.server.recipe.LightningRodRecipeBuilder;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -19,6 +20,7 @@ public class WorkshopRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput output, HolderLookup.Provider registries) {
         LightningRodRecipeBuilder.rod(BlockRegistrar.WORKBENCH.get(), Blocks.CRAFTING_TABLE)
+                .attachedFace(Direction.UP)
                 .group("workbench").save(output);
     }
 }

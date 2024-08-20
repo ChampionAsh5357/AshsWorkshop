@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
 
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
  */
 public class RecipeRegistrar {
 
-    public static final Supplier<RecipeType<LightningRodRecipe>> LIGHTNING_ROD_TYPE = type("lightning_rod");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<LightningRodRecipe>> LIGHTNING_ROD_TYPE = type("lightning_rod");
     public static final Supplier<RecipeSerializer<LightningRodRecipe>> LIGHTNING_ROD_SERIALIZER = serializer("lightning_rod", LightningRodRecipe.CODEC, LightningRodRecipe.STREAM_CODEC);
 
     /**
@@ -24,11 +25,11 @@ public class RecipeRegistrar {
      */
     public static void register() {}
 
-    private static <T extends Recipe<?>> Supplier<RecipeType<T>> type(String name) {
+    private static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> type(String name) {
         return WorkshopRegistrars.RECIPE_TYPE.register(name, () -> RecipeType.simple(AshsWorkshop.fromMod(name)));
     }
 
-    private static <T extends Recipe<?>> Supplier<RecipeSerializer<T>> serializer(String name, MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+    private static <T extends Recipe<?>> DeferredHolder<RecipeSerializer<?>, RecipeSerializer<T>> serializer(String name, MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
         return WorkshopRegistrars.RECIPE_SERIALIZER.register(name, () -> new RecipeSerializer<>() {
             @Override
             public MapCodec<T> codec() {

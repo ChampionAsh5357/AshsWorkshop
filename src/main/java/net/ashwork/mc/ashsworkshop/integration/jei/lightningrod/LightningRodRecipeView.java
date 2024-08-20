@@ -21,7 +21,7 @@ public record LightningRodRecipeView(LightningRodRecipe recipe, Optional<Ingredi
         this(
                 recipe,
                 Optional.of(Ingredient.of(
-                        recipe.input().stream()
+                        recipe.blocks().stream()
                                 .map(Holder::value)
                                 .map(ItemStack::new)
                 )).map(in -> in.isEmpty() ? null : in),

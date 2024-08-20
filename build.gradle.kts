@@ -37,6 +37,11 @@ sourceSets["main"].resources {
     exclude("./cache")
 }
 
+// TODO: Change to use main source set directly
+accessTransformers {
+    file("src/main/resources/META-INF/accesstransformer.cfg")
+}
+
 runs {
     // Apply to all run configurations
     configureEach {

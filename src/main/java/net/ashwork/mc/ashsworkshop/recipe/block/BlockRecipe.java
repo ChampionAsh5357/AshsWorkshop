@@ -7,7 +7,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.state.BlockState;
 
-public interface BlockRecipe<T extends BlockInput> extends Recipe<T> {
+public interface BlockRecipe<T extends AttachedBlockInput> extends Recipe<T> {
 
     BlockState setState(T input, HolderLookup.Provider registries);
 
