@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-// TODO: Figure out how to handle without adding all blocks twice
 @JeiPlugin
 public class WorkshopJeiPlugin implements IModPlugin {
 

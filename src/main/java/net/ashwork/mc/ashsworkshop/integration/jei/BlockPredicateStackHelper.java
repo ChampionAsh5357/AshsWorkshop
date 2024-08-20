@@ -10,7 +10,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -35,6 +37,16 @@ public class BlockPredicateStackHelper implements IIngredientHelper<BlockPredica
 
     @Override
     public ResourceLocation getResourceLocation(BlockPredicate ingredient) {
+        var holderSet = ingredient.blocks().orElseThrow();
+
+        // Extract mod id
+        if (holderSet instanceof HolderSet.Named<Block> named) {
+            return named.key().location();
+        } else if (holderSet.size() == 1) {
+            return holderSet.get(0).unwrapKey().orElseThrow().location();
+        }
+
+        // If it's a direct holder set with more than one element, assume it is from current mod
         return AshsWorkshop.fromMod(ingredient.toString().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_"));
     }
 
