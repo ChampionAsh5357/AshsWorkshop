@@ -82,15 +82,6 @@ public class SudokuData extends SavedData {
             this(grid, grid.checkSolution());
         }
 
-        public SudokuInfo(SudokuGrid grid, SudokuGridSettings.SolutionState state) {
-            this.grid = grid;
-            // Update state if solution has been added later
-            this.state = state == SudokuGridSettings.SolutionState.FINISHED_NOT_VALIDATED
-                    && this.grid.getSettings().value().hasSolution()
-                    ? grid.checkSolution()
-                    : state;
-        }
-
         private SudokuInfo recheckSolution(Runnable setDirty) {
             var newState = this.state == SudokuGridSettings.SolutionState.FINISHED_NOT_VALIDATED
                     // Make sure there is a solution to validate
