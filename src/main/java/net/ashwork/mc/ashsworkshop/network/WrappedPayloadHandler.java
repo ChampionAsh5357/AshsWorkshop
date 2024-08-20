@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.network;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

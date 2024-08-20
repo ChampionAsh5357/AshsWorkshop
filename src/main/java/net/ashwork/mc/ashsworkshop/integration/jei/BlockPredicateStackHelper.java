@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.integration.jei;
 
 import mezz.jei.api.ingredients.IIngredientHelper;

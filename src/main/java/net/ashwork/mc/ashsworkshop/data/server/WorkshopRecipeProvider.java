@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) ChampionAsh5357
+ * SPDX-License-Identifier: MIT
+ */
+
 package net.ashwork.mc.ashsworkshop.data.server;
 
 import net.ashwork.mc.ashsworkshop.data.server.recipe.LightningRodRecipeBuilder;
