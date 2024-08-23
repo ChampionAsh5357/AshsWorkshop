@@ -1,0 +1,13 @@
+{
+    "entries": [
+        {
+            "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+            "name": "ASHS_WORKSHOP_ANALYZER",
+            "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+            "parameters": {
+                "class": "net/ashwork/mc/ashsworkshop/client/util/ClientWorkshopEnums",
+                "field": "ANALYZER_PROXY"
+            }
+        }
+    ]
+}

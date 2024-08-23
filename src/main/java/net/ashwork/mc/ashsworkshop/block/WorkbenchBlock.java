@@ -7,16 +7,20 @@ package net.ashwork.mc.ashsworkshop.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
+import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.analysis.Analyzable;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -35,7 +39,9 @@ import java.util.EnumMap;
 /**
  * A block representing the workbench of this mod.
  */
-public class WorkbenchBlock extends HorizontalDirectionalBlock {
+public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyzable {
+
+    public static final ResourceLocation ANALYZED_WORKBENCH = AshsWorkshop.fromMod("analyzed_workbench");
 
     /**
      * A codec representing a serialized block.
@@ -115,5 +121,10 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    public ResourceLocation unlock() {
+        return ANALYZED_WORKBENCH;
     }
 }

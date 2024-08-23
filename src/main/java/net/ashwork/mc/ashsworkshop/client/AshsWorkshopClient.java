@@ -6,13 +6,16 @@
 package net.ashwork.mc.ashsworkshop.client;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.client.item.AnalyzerClientItem;
 import net.ashwork.mc.ashsworkshop.client.screen.WorkbenchScreen;
 import net.ashwork.mc.ashsworkshop.client.sudoku.marking.handler.MarkingInteractionHandler;
 import net.ashwork.mc.ashsworkshop.client.sudoku.renderer.SudokuObjectRendererTypes;
 import net.ashwork.mc.ashsworkshop.client.sudoku.renderer.SudokuRendererHandler;
+import net.ashwork.mc.ashsworkshop.init.ItemRegistrar;
 import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
 import net.ashwork.mc.ashsworkshop.init.MenuRegistrar;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
@@ -21,6 +24,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -46,6 +50,7 @@ public class AshsWorkshopClient {
         modBus.addListener(this::clientSetup);
         modBus.addListener(this::loadComplete);
         modBus.addListener(this::registerMenuScreens);
+        modBus.addListener(this::registerClientExtensions);
     }
 
     /**
@@ -81,7 +86,25 @@ public class AshsWorkshopClient {
             this.miHandler.registerModifiers(MarkingRegistrar.MAIN.get());
             this.miHandler.registerModifiers(MarkingRegistrar.CORNER.get(), GLFW.GLFW_MOD_SHIFT);
             this.miHandler.registerModifiers(MarkingRegistrar.CENTER.get(), GLFW.GLFW_MOD_CONTROL);
+
+            ItemProperties.register(
+                    ItemRegistrar.ANALYZER.get(), ItemRegistrar.ANALYZING_PROPERTY,
+                    (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1 : 0
+            );
+            ItemProperties.register(
+                    ItemRegistrar.ANALYZER.get(), ItemRegistrar.STATUS_PROPERTY,
+                    (stack, level, entity, seed) -> entity != null && entity.getUseItem() == stack ? (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / stack.getUseDuration(entity) : 0
+            );
         });
+    }
+
+    /**
+     * Registers the client extensions for a given item.
+     *
+     * @param event the event instance
+     */
+    private void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new AnalyzerClientItem(), ItemRegistrar.ANALYZER.get());
     }
 
     /**

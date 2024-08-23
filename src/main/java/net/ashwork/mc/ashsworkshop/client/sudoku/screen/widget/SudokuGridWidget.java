@@ -101,6 +101,7 @@ public class SudokuGridWidget extends AbstractWidget {
         }
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX(), this.getY(), 10);
+        // TODO: Handle background setup in multiple dynamic textures for layers
         this.boxes.forEach(box -> box.render(guiGraphics, mouseX, mouseY, partialTick));
         guiGraphics.pose().popPose();
 

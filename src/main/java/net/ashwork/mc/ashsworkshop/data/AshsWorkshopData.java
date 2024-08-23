@@ -7,6 +7,7 @@ package net.ashwork.mc.ashsworkshop.data;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopBlockStateProvider;
+import net.ashwork.mc.ashsworkshop.data.client.WorkshopItemModelProvider;
 import net.ashwork.mc.ashsworkshop.data.client.WorkshopLanguageProvider;
 import net.ashwork.mc.ashsworkshop.data.server.WorkshopBlockLootSubProvider;
 import net.ashwork.mc.ashsworkshop.data.server.WorkshopRecipeProvider;
@@ -61,6 +62,7 @@ public class AshsWorkshopData {
         // Client providers
         addProvider(generator, event.includeClient(), WorkshopLanguageProvider::new);
         addProvider(generator, event.includeClient(), output -> new WorkshopBlockStateProvider(output, existingFileHelper));
+        addProvider(generator, event.includeClient(), output -> new WorkshopItemModelProvider(output, existingFileHelper));
 
         // Server providers
         addProvider(generator, event.includeServer(), output -> new LootTableProvider(

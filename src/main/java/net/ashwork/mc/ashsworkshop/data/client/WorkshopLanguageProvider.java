@@ -6,6 +6,7 @@
 package net.ashwork.mc.ashsworkshop.data.client;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.init.ItemRegistrar;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
 import net.ashwork.mc.ashsworkshop.init.BlockRegistrar;
@@ -32,6 +33,7 @@ public class WorkshopLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         this.addBlock(BlockRegistrar.WORKBENCH, "Ash's Workbench");
+        this.addItem(ItemRegistrar.ANALYZER, "Workbench Analyzer");
 
         this.add(WorkshopComponents.WORKBENCH_MENU_KEY, "Ash's Workbench");
         this.add(WorkshopComponents.LIGHTNING_ROD_RECIPE_TYPE_KEY, "Lightning Rod");

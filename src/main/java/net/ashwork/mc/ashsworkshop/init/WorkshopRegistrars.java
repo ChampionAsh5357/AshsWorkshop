@@ -22,10 +22,12 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.function.TriFunction;
 
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +63,7 @@ public class WorkshopRegistrars {
     static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPE = DeferredRegister.create(Registries.BLOCK_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(Registries.RECIPE_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, AshsWorkshop.ID);
+    static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPE = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AshsWorkshop.ID);
 
     /**
      * Registers a block with an item.
@@ -90,13 +93,16 @@ public class WorkshopRegistrars {
         BLOCK_TYPE.register(modBus);
         RECIPE_TYPE.register(modBus);
         RECIPE_SERIALIZER.register(modBus);
+        ATTACHMENT_TYPE.register(modBus);
 
         // Load registry classes
         BlockRegistrar.register();
+        ItemRegistrar.register();
         MenuRegistrar.register();
         MarkingRegistrar.register();
         ConstraintTypeRegistrar.register();
         RecipeRegistrar.register();
+        AttachmentTypeRegistrar.register();
 
         // Register events
         modBus.addListener(WorkshopRegistrars::buildTabs);

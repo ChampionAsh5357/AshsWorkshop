@@ -1,0 +1,6 @@
+{
+  "parent": "ashs_workshop:item/analyzer",
+  "textures": {
+    "layer0": "ashs_workshop:item/analyzer_analysis_2"
+  }
+}

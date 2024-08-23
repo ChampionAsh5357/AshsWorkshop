@@ -23,6 +23,7 @@
   "ashs_workshop.sudoku_grid.standard.description": "Standard sudoku rules apply.",
   "block.ashs_workshop.workbench": "Ash's Workbench",
   "integration.jei.ashs_workshop.lightning_strike": "Lightning Strike",
+  "item.ashs_workshop.analyzer": "Workbench Analyzer",
   "menu.ashs_workshop.workbench": "Ash's Workbench",
   "recipe_type.ashs_workshop.lightning_rod": "Lightning Rod"
 }
