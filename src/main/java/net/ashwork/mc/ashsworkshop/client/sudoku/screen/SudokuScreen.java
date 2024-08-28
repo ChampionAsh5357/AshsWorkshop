@@ -12,7 +12,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-// TODO: Document
+/**
+ * The screen seen when solving a sudoku puzzle.
+ *
+ * TODO: This should be removed and merged with the workbench screen. That's the whole point of the widgets.
+ */
 public class SudokuScreen extends Screen {
 
     private final SudokuGrid grid;
@@ -29,6 +33,7 @@ public class SudokuScreen extends Screen {
 
     @Override
     public void onClose() {
+        // Update grid status on close
         super.onClose();
         PacketDistributor.sendToServer(new BiboundSendPlayerGrid(this.grid));
     }

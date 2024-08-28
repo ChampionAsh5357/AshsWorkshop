@@ -9,12 +9,25 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 
+/**
+ * An interface for constructing client-side enums.
+ */
 public interface ClientWorkshopEnums {
+    /**
+     * An enum proxy for an {@link HumanoidModel.ArmPose}.
+     */
     EnumProxy<HumanoidModel.ArmPose> ANALYZER_PROXY = new EnumProxy<>(
             HumanoidModel.ArmPose.class,
             false, (IArmPoseTransformer) ClientWorkshopEnums::analyzerTransform
     );
 
+    /**
+     * Transforms the third-person player model when set to the specified arm pose.
+     *
+     * @param model the model being transformed
+     * @param entity the entity the model is applied to
+     * @param arm the arm the entity is using
+     */
     private static void analyzerTransform(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
         if (!entity.isUsingItem()) {
             return;

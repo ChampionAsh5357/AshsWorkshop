@@ -11,6 +11,9 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Predicate;
 
+/**
+ * Renders the selection box that appears when selecting a box.
+ */
 public class SelectionRenderer implements SudokuObjectRenderer<Boolean> {
 
     private static final int SELECTION_COLOR = 0xFF69C8EC;

@@ -23,6 +23,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Map;
 
+/**
+ * The selection screen where all available sudokus that can be completed are displayed.
+ *
+ * TODO: Turn into a widget and embed inside workbench screen. Lots of duplicate code
+ */
 public class SudokuSelectionScreen extends Screen {
 
     private static final ResourceLocation SCREEN_BORDER = AshsWorkshop.fromMod("textures/gui/workbench/screen_border.png");
@@ -108,6 +113,7 @@ public class SudokuSelectionScreen extends Screen {
         public SudokuList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
             super(minecraft, width, height, y, itemHeight);
 
+            // Loop through available grids and display status appropriately
             this.minecraft.level.registryAccess().registryOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).holders()
                     .forEach(settings -> this.addEntry(new SudokuEntry(settings, SudokuSelectionScreen.this.hasPlayed.getOrDefault(settings, SudokuGridSettings.SolutionState.NEW))));
         }
@@ -140,12 +146,14 @@ public class SudokuSelectionScreen extends Screen {
 
             @Override
             public Component getNarration() {
+                // TODO: Update to a proper narration
                 return Component.empty();
             }
 
             @Override
             public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
                 var lineHeight = SudokuSelectionScreen.this.font.lineHeight;
+                // Draw metadata of grid text
                 this.settings.value().attribution().ifPresent(info -> {
                     graphics.drawString(SudokuSelectionScreen.this.font, info.title(), left + 4, top + (height - lineHeight + 1) / 2 - 5, 0xFFFFFFFF, false);
                     graphics.drawString(SudokuSelectionScreen.this.font, "by " + info.author(), left + 4, top + (height - lineHeight + 1) / 2 + 5, 0xFFAAAAAA, false);
@@ -176,6 +184,7 @@ public class SudokuSelectionScreen extends Screen {
 
             @Override
             public void renderBack(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+                // Make this a transparent overlay
                 SudokuList.this.renderSelection(guiGraphics, top, width, height, 0x2F2E2E2E, 0x2F7A7A7A);
             }
         }

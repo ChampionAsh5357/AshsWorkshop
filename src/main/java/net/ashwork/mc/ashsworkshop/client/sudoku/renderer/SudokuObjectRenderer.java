@@ -13,6 +13,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+/**
+ * A generalized interface for rendering a sudoku object on a grid.
+ *
+ * @param <O> the type of the object to render
+ */
 public interface SudokuObjectRenderer<O> {
 
     int MARKING_COLOR = 0xFF526BEC;

@@ -16,6 +16,9 @@ import net.ashwork.mc.ashsworkshop.client.sudoku.renderer.selection.SelectionRen
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
 
+/**
+ * A class containing the renderers to apply to a given sudoku object.
+ */
 public class SudokuObjectRendererTypes {
 
     public static void registerTypes(SudokuRendererHandler handler) {

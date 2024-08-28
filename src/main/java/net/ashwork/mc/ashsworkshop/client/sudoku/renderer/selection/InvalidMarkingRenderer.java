@@ -12,6 +12,9 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Predicate;
 
+/**
+ * Renders a square when the main marking is invalid.
+ */
 public class InvalidMarkingRenderer implements SudokuObjectRenderer<MainMarking> {
 
     @Override

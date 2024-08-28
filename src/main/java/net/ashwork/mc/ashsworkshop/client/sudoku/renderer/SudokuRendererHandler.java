@@ -28,6 +28,9 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * A generalized object renderer for the sudoku grid. Works similarly to the tier sorting registry.
+ */
 @SuppressWarnings("UnstableApiUsage")
 public class SudokuRendererHandler {
 
@@ -92,6 +95,7 @@ public class SudokuRendererHandler {
         return type;
     }
 
+    // Construct into a renderable list
     public void finalizeOrder() {
         ImmutableList.Builder<SudokuObjectRenderer.Type<?, ?>> builder = ImmutableList.builder();
         this.renderingOrder.values().forEach(graph -> builder.addAll(TopologicalSort.topologicalSort(graph, null)));
@@ -103,9 +107,11 @@ public class SudokuRendererHandler {
     }
 
     public void render(GuiGraphics graphics, SudokuBoxWidget widget, boolean fogOfWar) {
+        // Handles fog of war
         Predicate<SudokuObjectRenderer.Type<?, ?>> fowChecker = fogOfWar
                 ? type -> type.layer().ordinal() >= SudokuBoxLayer.FOG_OF_WAR.ordinal()
                 : type -> type.layer() != SudokuBoxLayer.FOG_OF_WAR;
+        // TODO: Redo to split into layers for the dynamic renderer
         for (var type : this.orderedRenderers) {
             if (fowChecker.test(type) && this.renderObject(type, graphics, widget)) {
                 break;

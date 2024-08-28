@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
+/**
+ * The interaction handler for sudoku markings. Handles what happens when a marking selector is held and
+ * an associated valid value is pressed.
+ * TODO: Needs a rewrite to key mappings (which may not be possible in Mojang's system)
+ * TODO: Needs a better way to handle as this is not that maintainable
+ */
 public class MarkingInteractionHandler {
 
     private final List<Modifier> typeToModifiers;

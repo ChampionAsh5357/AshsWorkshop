@@ -14,8 +14,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * Renders the markings to display in the corners of the box.
+ */
 public class CornerMarkingsRenderer implements SudokuObjectRenderer<CornerMarkings> {
 
+    // List of positions to apply before and after scaling
     private static final List<Function<Context, Offset>> POSITIONS = List.of(
             ctx -> new Offset(0, 0, ctx.margin, ctx.margin),
             ctx -> new Offset(ctx.width, 0, - ctx.margin - ctx.textWidth, ctx.margin),
@@ -38,6 +42,8 @@ public class CornerMarkingsRenderer implements SudokuObjectRenderer<CornerMarkin
             float scalingTextWidth = font.width("6") - 1;
             // We subtract 2 since the line height has a margin of 1 on the top and bottom of the text
             float textHeight = font.lineHeight - 2;
+
+            // Handle text scaling within the box
             float xScale = (width - margin * 2) / (scalingTextWidth * 5);
             float yScale = (height - margin * 2) / (((textHeight + 3) * 3) - 3);
             float scale = Math.min(1f, Math.max(xScale, yScale));

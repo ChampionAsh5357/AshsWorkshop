@@ -16,7 +16,10 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
-// TODO: REWRITE
+/**
+ * The widget that displays and keeps track of a single sudoku box.
+ * TODO: Remove once everything has been stuck in a dynamic texture. This can easily be stored in the grid widget.
+ */
 public class SudokuBoxWidget extends AbstractWidget {
 
     private final Font font;
@@ -116,6 +119,7 @@ public class SudokuBoxWidget extends AbstractWidget {
             return false;
         }
 
+        // TODO: More keymappings to figure out how to handle
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE || keyCode == GLFW.GLFW_KEY_DELETE) {
             // Remove values
             if (!AshsWorkshopClient.instance().markingInteractionHandler().applyModifiers(modifiers, this.box::clear, false)) {
@@ -126,6 +130,7 @@ public class SudokuBoxWidget extends AbstractWidget {
         }
 
         var codePoint = keyToPoint(keyCode);
+        // TODO: Make valid numbers a setting in the grid
         if (codePoint >= '1' && codePoint <= '9' && !this.box.isLocked()) {
             AshsWorkshopClient.instance().markingInteractionHandler().applyModifiers(modifiers, type -> {
                 // Force boxes that already have a value set to not do any markings but the main one
@@ -143,6 +148,7 @@ public class SudokuBoxWidget extends AbstractWidget {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    // TODO: Figure out a better way to deal with this
     private char keyToPoint(int keyCode) {
         return switch (keyCode) {
             case GLFW.GLFW_KEY_KP_0, GLFW.GLFW_KEY_KP_1,

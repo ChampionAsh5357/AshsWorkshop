@@ -12,8 +12,14 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The client item extension for {@link net.ashwork.mc.ashsworkshop.item.AnalyzerItem}.
+ */
 public class AnalyzerClientItem implements IClientItemExtensions {
 
+    /**
+     * The enum extension for the analyzer arm pose.
+     */
     private static final HumanoidModel.ArmPose ANALYZER = ClientWorkshopEnums.ANALYZER_PROXY.getValue();
 
     @Nullable
@@ -22,14 +28,19 @@ public class AnalyzerClientItem implements IClientItemExtensions {
         return ANALYZER;
     }
 
-    // TODO: Maybe add target animation?
     @Override
     public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
+        // Only apply on item use
         if (player.isUsingItem()) {
+            // Flip depending on arm
             int armX = arm == HumanoidArm.RIGHT ? 1 : -1;
+
+            // Construct offset period, basic sine animation of moving up and down
             float useDuration = itemInHand.getUseDuration(player);
             float phase = 2 * (useDuration - (player.getUseItemRemainingTicks() - partialTick + 1)) / useDuration;
             float offset = 0.2F * Mth.abs(Mth.sin((float) Math.PI * phase));
+
+            // Apply the appropriate translations
             poseStack.translate(armX * (0.56F - offset), -0.52F - offset, -0.72F - offset);
             return true;
         }

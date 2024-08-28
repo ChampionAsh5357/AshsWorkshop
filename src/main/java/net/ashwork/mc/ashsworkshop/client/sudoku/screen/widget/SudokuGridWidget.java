@@ -25,7 +25,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-// TODO: REWRITE
+/**
+ * A widget to render the grid of the sudoku.
+ * TODO: Needs a rewrite and cleanup
+ */
 public class SudokuGridWidget extends AbstractWidget {
 
     private final SudokuGrid grid;
@@ -40,6 +43,7 @@ public class SudokuGridWidget extends AbstractWidget {
     private final BoxConstraint boxConstraint;
 
     public SudokuGridWidget(Font font, SudokuGrid grid, int centerX, int centerY, int boxLength, int border, float margin) {
+        // This is just crazy, should handle much better
         super(
                 centerX - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2, centerY - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2,
                 boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1), boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1), Component.empty()
@@ -56,6 +60,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 .map(Holder::value).filter(constr -> constr.type() == ConstraintTypeRegistrar.BOX.get()).findFirst()
                 .map(BoxConstraint.class::cast).orElse(null);
 
+        // Construct box widgets
         for (int j = 0; j < grid.getGridLength(); j++) {
             for (int i = 0; i < grid.getGridLength(); i++) {
                 // Initial offset + box length * index + offset for box
@@ -72,6 +77,7 @@ public class SudokuGridWidget extends AbstractWidget {
             }
         }
 
+        // Apply initial constraints for default values
         this.boxes.forEach(box -> {
             var value = box.getValue();
             if (value != null) {
@@ -85,6 +91,7 @@ public class SudokuGridWidget extends AbstractWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xFFBBBBBB);
+        // Draw boxes
         if (this.boxConstraint != null) {
             // Horizontal lines
             var horizontalSkip = this.grid.getGridLength() / this.boxConstraint.columnSize();
@@ -105,6 +112,7 @@ public class SudokuGridWidget extends AbstractWidget {
         this.boxes.forEach(box -> box.render(guiGraphics, mouseX, mouseY, partialTick));
         guiGraphics.pose().popPose();
 
+        // Draw attribution information
         this.grid.getSettings().value().attribution().ifPresent(info -> {
             guiGraphics.fill(
                     this.getX() + this.getWidth() + 2, this.getY() + this.getHeight() / 2 - 30,
@@ -125,7 +133,7 @@ public class SudokuGridWidget extends AbstractWidget {
                     false
             );
 
-            // TODO: Handle text wrapping and scissor
+            // TODO: Handle text wrapping and scissor, looks pretty bad
             info.description().ifPresent(description -> {
                 guiGraphics.pose().pushPose();
                 guiGraphics.pose().translate(this.getX() + this.getWidth() + 2 + 2, this.getY() + (float) this.getHeight() / 2 - 15 + 2, 0f);
@@ -142,9 +150,7 @@ public class SudokuGridWidget extends AbstractWidget {
     }
 
     @Override
-    public void playDownSound(SoundManager handler) {
-
-    }
+    public void playDownSound(SoundManager handler) {}
 
     @Override
     public void onClick(double mouseX, double mouseY, int button) {
@@ -157,6 +163,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 && yClick >= box.getY() && yClick < box.getY() + box.getHeight()
         ).findFirst();
 
+        // TODO: Update this to check if any modifiers are down...somehow
         if (!(Screen.hasShiftDown() || Screen.hasControlDown())) {
             this.focused.forEach(SudokuBoxWidget::unselect);
             this.focused.clear();
@@ -177,6 +184,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 box -> xClick >= box.getX() && xClick < box.getX() + box.getWidth()
                         && yClick >= box.getY() && yClick < box.getY() + box.getHeight()
         ).forEach(box -> {
+            // Select all dragged over boxes
             if (this.focused.add(box)) {
                 box.select();
             }
@@ -195,7 +203,7 @@ public class SudokuGridWidget extends AbstractWidget {
                 run.accept(box);
                 var newValue = box.getValue();
                 if (!Objects.equals(oldValue, newValue)) {
-                    // Values Changed
+                    // Values Changed, apply constraints
                     this.grid.applyConstraints(box.getYIdx(), box.getXIdx(), (rowIdx, columnIdx) ->
                             this.setInvalidBox(box, rowIdx * this.grid.getGridLength() + columnIdx, newValue)
                     );
@@ -207,6 +215,7 @@ public class SudokuGridWidget extends AbstractWidget {
     }
 
     private void setInvalidBox(SudokuBoxWidget box, int index, Character newValue) {
+        // Add to invalid map for different boxes
         var invalidBox = this.boxes.get(index);
         if (invalidBox != box) {
             if (newValue != null) {
@@ -219,6 +228,6 @@ public class SudokuGridWidget extends AbstractWidget {
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
+        // TODO: Add narration
     }
 }

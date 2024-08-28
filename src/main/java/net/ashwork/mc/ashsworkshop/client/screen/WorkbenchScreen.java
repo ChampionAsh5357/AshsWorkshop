@@ -21,9 +21,14 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-// TODO: Document
+/**
+ * The screen class for the workbench menu.
+ */
 public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu> {
 
+    /**
+     * The border of the screen when not in fullscreen.
+     */
     private static final ResourceLocation SCREEN_BORDER = AshsWorkshop.fromMod("textures/gui/workbench/screen_border.png");
 
     private final WorkbenchMenu menu;
@@ -45,6 +50,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
     @Override
     protected void init() {
+        // Handle fullscreen mode
         if (this.fullscreen) {
             this.screenWidth = this.width;
             this.screenHeight = this.height;
@@ -60,10 +66,11 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         this.leftPos = (this.width - this.screenWidth) / 2 + this.borderSize;
         this.topPos = (this.height - this.screenHeight) / 2 + this.borderSize;
 
-        // TODO: Make more dynamic later
+        // TODO: Make more dynamic later for multiple applications
         this.addRenderableWidget(new Icon(AshsWorkshop.fromMod("workbench/icons/sudoku"), 16, this.leftPos, this.topPos, 24, Component.literal("Sudoku")));
     }
 
+    // TODO: Should remove once all other screens are merged into this one
     public boolean isFullscreen() {
         return this.fullscreen;
     }
@@ -77,6 +84,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.renderBackground(graphics, mouseX, mouseY, partialTick);
 
+        // Draw border if not in full screen
         if (!this.fullscreen) {
             graphics.blit(SCREEN_BORDER,
                     this.leftPos - this.borderSize, this.topPos - this.borderSize,
@@ -92,10 +100,12 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // Disable important input when updating page
         if (this.packetSent) {
             return false;
         }
 
+        // Handle clicking on inidividual elements
         for (GuiEventListener guieventlistener : this.children()) {
             if (guieventlistener.mouseClicked(mouseX, mouseY, button)) {
                 this.setFocused(guieventlistener);
@@ -113,10 +123,13 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // Disable important input when updating page
         if (this.packetSent) {
             return false;
         }
 
+        // Swap fullscreen
+        // TODO: Make keybinding and button
         if (keyCode == GLFW.GLFW_KEY_F) {
             this.fullscreen = !this.fullscreen;
             this.rebuildWidgets();
@@ -125,6 +138,9 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    /**
+     * A class that represents a clickable icon on the workbench screen.
+     */
     public class Icon extends AbstractWidget {
 
         private final ResourceLocation iconSprite;
@@ -140,6 +156,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            // Draw selected border when clicked
             if (this.isFocused()) {
                 graphics.hLine(this.getX(), this.getX() + this.width, this.getY(), 0xFF0A3D69);
                 graphics.hLine(this.getX(), this.getX() + this.width, this.getY() + this.height - 1, 0xFF0A3D69);
@@ -147,11 +164,16 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
                 graphics.vLine(this.getX() + this.width, this.getY(), this.getY() + this.height, 0xFF0A3D69);
             }
 
+            // Draw sprite
             graphics.blitSprite(this.iconSprite,
                     this.getX() + (this.width - this.iconSize) / 2, this.getY() + (this.height - this.iconSize) / 4, 10,
                     this.iconSize, this.iconSize
             );
             graphics.pose().pushPose();
+
+            // TODO: Fix text scaling and location
+            // TODO: Figure out better text rendering at small sizes, Mojang's font is not really great for it.
+
             // Get text box
             int textBoxWidth = this.width - 4;
             int textBoxHeight = 4;
@@ -172,7 +194,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
         @Override
         protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
+            // TODO: Properly handle accessibility
         }
 
         @Override

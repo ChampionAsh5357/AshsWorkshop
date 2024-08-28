@@ -16,18 +16,26 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.function.Predicate;
 
+/**
+ * Renders the markings to display in the center of the box.
+ */
 public class CenterMarkingsRenderer implements SudokuObjectRenderer<CenterMarkings> {
 
     @Override
     public boolean render(GuiGraphics graphics, CenterMarkings marking, Font font, Predicate<Character> invalidChecker, int x, int y, int width, int height, int selectedBorder, float margin, boolean locked) {
+        // Should only render for unlocked boxes where the marking isn't empty
         if (!locked && !marking.getValues().isEmpty()) {
             graphics.pose().pushPose();
+
+            // Construct the component to display
             MutableComponent centerComponent = Component.empty();
             for (Character value : marking.getValues()) {
                 centerComponent.append(Component.literal(String.valueOf(value)).setStyle(Style.EMPTY.withColor(
                         invalidChecker.test(value) ? INVALID_MARKING_COLOR : MARKING_COLOR
                 )));
             }
+
+            // Handle rendering and sizing
             FormattedCharSequence centerText = centerComponent.getVisualOrderText();
             float textWidth = font.width(centerText) - 1;
             float textHeight = font.lineHeight - 2;

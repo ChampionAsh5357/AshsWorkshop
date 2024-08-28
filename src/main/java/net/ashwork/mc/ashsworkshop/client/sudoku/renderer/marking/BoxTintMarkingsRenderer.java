@@ -12,6 +12,9 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Predicate;
 
+/**
+ * Renders the tinting color to the box. Currently, not used.
+ */
 public class BoxTintMarkingsRenderer implements SudokuObjectRenderer<BoxTintMarkings> {
 
     private final int backgroundColor;
