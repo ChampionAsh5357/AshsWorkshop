@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A holder, only applicable to a player, that contains the information about the analyzing reosurces.
+ */
 public class AnalysisHolder implements INBTSerializable<ListTag> {
 
     private final Player player;
@@ -30,6 +33,7 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
         this.analyzedResources = new HashSet<>();
     }
 
+    // Start analyzing the thing
     public <C extends AnalysisContext, A extends Analysis<C>> boolean analyze(A analyzing, C context) {
         // Do not analyze if it already has been
         if (analyzing.storeInHolder() && this.isAnalyzed(analyzing)) {
@@ -46,6 +50,7 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
         return true;
     }
 
+    // When the analysis is finished
     public void finishAnalyzing() {
         // Handle edge case
         if (this.analyzing == null || this.context == null) {
@@ -85,12 +90,12 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
         this.analyzedResources.clear();
     }
 
+    // Remove reference to objects
     public void stopAnalyzing() {
         this.analyzing = null;
         this.context = null;
     }
 
-    // Call only in server context
     private <C extends AnalysisContext, A extends Analysis<C>> void unlock() {
         @SuppressWarnings("unchecked")
         C context = (C) this.context;

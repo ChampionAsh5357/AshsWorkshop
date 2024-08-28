@@ -6,6 +6,9 @@ import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * A simple analysis that only unlocks information with any special qualities.
+ */
 public class SimpleAnalysis implements Analysis<AnalysisContext> {
 
     @Override

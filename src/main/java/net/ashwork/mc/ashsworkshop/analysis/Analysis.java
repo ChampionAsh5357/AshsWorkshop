@@ -2,6 +2,11 @@ package net.ashwork.mc.ashsworkshop.analysis;
 
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * Indicates a thing that can be analyzed for unlockable information.
+ *
+ * @param <C> the context of what is being analyzed
+ */
 public interface Analysis<C extends AnalysisContext> {
 
     // Can be overridden to check a given context
@@ -10,6 +15,7 @@ public interface Analysis<C extends AnalysisContext> {
         return true;
     }
 
+    // Handles any unlocking information
     default void unlock(Player player, C context) {}
 
     // Stores the analyzed resources in the holder itself

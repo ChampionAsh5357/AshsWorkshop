@@ -24,6 +24,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -123,5 +124,9 @@ public class AshsWorkshopClient {
      */
     private void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(MenuRegistrar.WORKBENCH.value(), (WorkbenchMenu menu, Inventory inventory, Component title) -> new WorkbenchScreen(menu, title));
+    }
+
+    private void renderLevelStage(RenderLevelStageEvent event) {
+        // TODO: Figure out how to add analyzer target information
     }
 }
