@@ -22,6 +22,7 @@ public class AnalyzerClientItem implements IClientItemExtensions {
         return ANALYZER;
     }
 
+    // TODO: Maybe add target animation?
     @Override
     public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
         if (player.isUsingItem()) {

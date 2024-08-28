@@ -7,21 +7,24 @@ package net.ashwork.mc.ashsworkshop.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import net.ashwork.mc.ashsworkshop.AshsWorkshop;
-import net.ashwork.mc.ashsworkshop.analysis.Analyzable;
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisHolder;
+import net.ashwork.mc.ashsworkshop.analysis.AnalyzableBlock;
+import net.ashwork.mc.ashsworkshop.init.AnalysisRegistrar;
+import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -34,14 +37,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
-
 /**
  * A block representing the workbench of this mod.
  */
-public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyzable {
-
-    public static final ResourceLocation ANALYZED_WORKBENCH = AshsWorkshop.fromMod("analyzed_workbench");
+public class WorkbenchBlock extends HorizontalDirectionalBlock implements AnalyzableBlock {
 
     /**
      * A codec representing a serialized block.
@@ -104,6 +103,11 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyz
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        // Do not open if the object isn't analyzed
+        if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(AnalysisRegistrar.WORKBENCH.get())) {
+            return InteractionResult.FAIL;
+        }
+
         // Open menu on server side
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(state.getMenuProvider(level, pos));
@@ -124,7 +128,7 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyz
     }
 
     @Override
-    public ResourceLocation unlock() {
-        return ANALYZED_WORKBENCH;
+    public boolean analyze(BlockState state, UseOnContext context, AnalysisHolder holder) {
+        return holder.analyze(AnalysisRegistrar.WORKBENCH.get(), new AnalysisContext.BlockContext(context.getLevel(), context.getClickedPos(), state));
     }
 }

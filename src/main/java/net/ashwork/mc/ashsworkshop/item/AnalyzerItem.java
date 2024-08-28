@@ -1,6 +1,7 @@
 package net.ashwork.mc.ashsworkshop.item;
 
-import net.ashwork.mc.ashsworkshop.analysis.Analyzable;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
+import net.ashwork.mc.ashsworkshop.analysis.AnalyzableBlock;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,16 +31,15 @@ public class AnalyzerItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        // TODO: Check if works
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (!(state.getBlock() instanceof Analyzable analyzable) || context.getPlayer() == null) {
+        if (!(state.getBlock() instanceof AnalyzableBlock analyzable) || context.getPlayer() == null) {
             return super.useOn(context);
         }
 
-        if (!context.getLevel().isClientSide) {
-            var holder = context.getPlayer().getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
-            // TODO: If already analyzed, ignore
-            holder.analyze(analyzable, new Analyzable.BlockContext(context.getLevel(), context.getClickedPos(), state));
+        var holder = context.getPlayer().getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
+        if (!analyzable.analyze(state, context, holder)) {
+            // Already analyzed
+            return InteractionResult.FAIL;
         }
 
         context.getPlayer().startUsingItem(context.getHand());
@@ -48,8 +48,10 @@ public class AnalyzerItem extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (!level.isClientSide && entity instanceof Player player) {
-            player.getCooldowns().addCooldown(this, 1200);
+        if (entity instanceof Player player) {
+            if (!level.isClientSide) {
+                player.getCooldowns().addCooldown(this, 1200);
+            }
 
             var holder = player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
             holder.finishAnalyzing();
@@ -60,7 +62,7 @@ public class AnalyzerItem extends Item {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
         // Only stop analyzing if the player hasn't finished using the item
-        if (!level.isClientSide && entity instanceof Player player) {
+        if (entity instanceof Player player) {
             var holder = player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
             holder.stopAnalyzing();
         }

@@ -7,6 +7,8 @@ package net.ashwork.mc.ashsworkshop.init;
 
 import com.mojang.serialization.MapCodec;
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.game.sudoku.constraint.SudokuConstraint;
 import net.minecraft.core.HolderLookup;
@@ -55,6 +57,8 @@ public class WorkshopRegistrars {
      */
     static final DeferredRegister<MenuType<?>> MENU = DeferredRegister.create(Registries.MENU, AshsWorkshop.ID);
 
+    static final DeferredRegister<Analysis<?>> ANALYSIS = DeferredRegister.create(WorkshopRegistries.ANALYSIS, AshsWorkshop.ID);
+
     /**
      * The sudoku marking type registrar.
      */
@@ -94,6 +98,7 @@ public class WorkshopRegistrars {
         RECIPE_TYPE.register(modBus);
         RECIPE_SERIALIZER.register(modBus);
         ATTACHMENT_TYPE.register(modBus);
+        ANALYSIS.register(modBus);
 
         // Load registry classes
         BlockRegistrar.register();
@@ -103,6 +108,7 @@ public class WorkshopRegistrars {
         ConstraintTypeRegistrar.register();
         RecipeRegistrar.register();
         AttachmentTypeRegistrar.register();
+        AnalysisRegistrar.register();
 
         // Register events
         modBus.addListener(WorkshopRegistrars::buildTabs);
