@@ -38,11 +38,13 @@ public class SudokuGridWidget extends AbstractWidget {
     private final int boxLength;
     private final int border;
 
+    private final Runnable closeScreen;
+
     // TODO: Patchy thing until constraint renderers are added
     @Nullable
     private final BoxConstraint boxConstraint;
 
-    public SudokuGridWidget(Font font, SudokuGrid grid, int centerX, int centerY, int boxLength, int border, float margin) {
+    public SudokuGridWidget(Font font, SudokuGrid grid, int centerX, int centerY, int boxLength, int border, float margin, Runnable closeScreen) {
         // This is just crazy, should handle much better
         super(
                 centerX - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2, centerY - (boxLength * grid.getGridLength() + border * (grid.getGridLength() + 1)) / 2,
@@ -86,6 +88,8 @@ public class SudokuGridWidget extends AbstractWidget {
                 );
             }
         });
+
+        this.closeScreen = closeScreen;
     }
 
     @Override
@@ -209,6 +213,10 @@ public class SudokuGridWidget extends AbstractWidget {
                     );
                 }
             });
+
+            if (this.grid.checkSolution().isComplete()) {
+                this.closeScreen.run();
+            }
             return true;
         }
         return false;

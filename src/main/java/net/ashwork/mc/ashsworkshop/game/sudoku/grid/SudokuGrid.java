@@ -21,7 +21,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 public class SudokuGrid {
@@ -155,20 +154,23 @@ public class SudokuGrid {
         // Apply constraints to each box and mark on conflict
         for (int idx = 0; idx < this.getGridLength() * this.getGridLength(); idx++) {
             var value = this.boxes.get(idx).mainValue();
-            if (value != null) {
-                int tempIdx = idx;
-                this.applyConstraints(idx / this.getGridLength(), idx % this.getGridLength(), (rowIdx, columnIdx) -> {
-                    int conflictIdx = rowIdx * this.getGridLength() + columnIdx;
-                    // Make sure temp and conflict index do not match
-                    // And if the value of the two different boxes are the same
-                    if (tempIdx != conflictIdx && value == this.boxes.get(conflictIdx).mainValue()) {
-                        isUnsolved.setValue(true);
-                    }
-                });
+            if (value == null) {
+                // A null value means that the puzzle is still inprogress
+                return SudokuGridSettings.SolutionState.IN_PROGRESS;
+            }
 
-                if (isUnsolved.booleanValue()) {
-                    return SudokuGridSettings.SolutionState.IN_PROGRESS;
+            int tempIdx = idx;
+            this.applyConstraints(idx / this.getGridLength(), idx % this.getGridLength(), (rowIdx, columnIdx) -> {
+                int conflictIdx = rowIdx * this.getGridLength() + columnIdx;
+                // Make sure temp and conflict index do not match
+                // And if the value of the two different boxes are the same
+                if (tempIdx != conflictIdx && value == this.boxes.get(conflictIdx).mainValue()) {
+                    isUnsolved.setValue(true);
                 }
+            });
+
+            if (isUnsolved.booleanValue()) {
+                return SudokuGridSettings.SolutionState.IN_PROGRESS;
             }
         }
 

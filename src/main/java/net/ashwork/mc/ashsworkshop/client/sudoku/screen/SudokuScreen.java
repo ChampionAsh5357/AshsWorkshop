@@ -28,7 +28,7 @@ public class SudokuScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addRenderableWidget(new SudokuGridWidget(this.font, this.grid, this.width / 2, this.height / 2, 16, 1, 1f));
+        this.addRenderableWidget(new SudokuGridWidget(this.font, this.grid, this.width / 2, this.height / 2, 16, 1, 1f, this::onClose));
     }
 
     @Override

@@ -188,18 +188,20 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
     }
 
     public enum SolutionState {
-        NEW("New"),
-        IN_PROGRESS("In Progress"),
-        FINISHED_NOT_VALIDATED("Finished"),
-        COMPLETE("Complete");
+        NEW("New", false),
+        IN_PROGRESS("In Progress", false),
+        FINISHED_NOT_VALIDATED("Finished", true),
+        COMPLETE("Complete", true);
 
         public static final Codec<SolutionState> CODEC = Codec.INT.xmap(id -> SolutionState.values()[id], SolutionState::ordinal);
         public static final StreamCodec<ByteBuf, SolutionState> STREAM_CODEC = ByteBufCodecs.idMapper(id -> SolutionState.values()[id], SolutionState::ordinal);
 
         private final String displayName;
+        private final boolean isComplete;
 
-        SolutionState(String displayName) {
+        SolutionState(String displayName, boolean isComplete) {
             this.displayName = displayName;
+            this.isComplete = isComplete;
         }
 
         public String getDisplayName() {
@@ -208,6 +210,10 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
 
         public boolean getServerData() {
             return this != NEW;
+        }
+
+        public boolean isComplete() {
+            return this.isComplete;
         }
     }
 }
