@@ -18,6 +18,9 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +50,19 @@ public class SudokuData extends SavedData {
 
     private SudokuData() {
         this.grids = new HashMap<>();
+    }
+
+    @Override
+    public void save(File file, HolderLookup.Provider registries) {
+        if (this.isDirty()) {
+            try {
+                // Create missing directories
+                Files.createDirectories(file.toPath().getParent());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        super.save(file, registries);
     }
 
     @Override
