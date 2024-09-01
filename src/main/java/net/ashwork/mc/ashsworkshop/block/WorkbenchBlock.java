@@ -104,7 +104,7 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyz
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         // Do not open if the object isn't analyzed
-        if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(AnalysisRegistrar.WORKBENCH.get())) {
+        if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(AnalysisRegistrar.WORKBENCH.get(), new AnalysisContext.BlockContext(level, pos, state))) {
             return InteractionResult.FAIL;
         }
 

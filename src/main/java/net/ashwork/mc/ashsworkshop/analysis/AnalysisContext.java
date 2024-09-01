@@ -1,6 +1,7 @@
 package net.ashwork.mc.ashsworkshop.analysis;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -13,7 +14,9 @@ public interface AnalysisContext {
     /**
      * {@return true when the context has remained the same on final usage}
      */
-    boolean validate();
+    default boolean validate(Player player) {
+        return player.position().closerThan(this.position(), 8);
+    }
 
     /**
      * {@return the current level}
@@ -35,8 +38,8 @@ public interface AnalysisContext {
     record BlockContext(Level level, BlockPos pos, BlockState state) implements AnalysisContext {
 
         @Override
-        public boolean validate() {
-            return this.level.getBlockState(pos) == this.state;
+        public boolean validate(Player player) {
+            return AnalysisContext.super.validate(player) && this.level.getBlockState(pos) == this.state;
         }
 
         @Override

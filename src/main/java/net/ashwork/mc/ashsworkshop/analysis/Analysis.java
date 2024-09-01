@@ -1,5 +1,7 @@
 package net.ashwork.mc.ashsworkshop.analysis;
 
+import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -18,8 +20,7 @@ public interface Analysis<C extends AnalysisContext> {
     // Handles any unlocking information
     default void unlock(Player player, C context) {}
 
-    // Stores the analyzed resources in the holder itself
-    default boolean storeInHolder() {
-        return true;
+    default ResourceLocation getAnalyzedName(C context) {
+        return WorkshopRegistries.ANALYSIS.getKey(this);
     }
 }

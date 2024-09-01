@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Collections;
@@ -36,12 +37,8 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
     // Start analyzing the thing
     public <C extends AnalysisContext, A extends Analysis<C>> boolean analyze(A analyzing, C context) {
         // Do not analyze if it already has been
-        if (analyzing.storeInHolder() && this.isAnalyzed(analyzing)) {
-            return false;
-        }
-
         // Make sure there isn't anything analysis specific blocking it
-        if (!analyzing.canAnalyze(this.player, context)) {
+        if (this.isAnalyzed(analyzing, context) || !analyzing.canAnalyze(this.player, context)) {
             return false;
         }
 
@@ -58,15 +55,15 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
             return;
         }
 
-        if (this.context.validate()) {
+        if (this.context.validate(this.player)) {
             this.unlock();
         }
 
         this.stopAnalyzing();
     }
 
-    public boolean isAnalyzed(Analysis<?> analysis) {
-        return this.analyzedResources.contains(analysisKey(analysis));
+    public <C extends AnalysisContext, A extends Analysis<C>> boolean isAnalyzed(A analysis, @Nullable C context) {
+        return this.analyzedResources.contains(analysis.getAnalyzedName(context));
     }
 
     public Set<ResourceLocation> analyzedResources() {
@@ -102,14 +99,12 @@ public class AnalysisHolder implements INBTSerializable<ListTag> {
         @SuppressWarnings("unchecked")
         A analysis = (A) this.analyzing;
 
-        if (analysis.storeInHolder()) {
-            var key = analysisKey(analysis);
-            this.analyzedResources.add(key);
+        var key = analysis.getAnalyzedName(context);
+        this.analyzedResources.add(key);
 
-            // Send single key
-            if (this.player instanceof ServerPlayer sp) {
-                PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(Set.of(key)));
-            }
+        // Send single key
+        if (this.player instanceof ServerPlayer sp) {
+            PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(Set.of(key)));
         }
         analysis.unlock(this.player, context);
     }
