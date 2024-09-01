@@ -32,7 +32,7 @@ public class SudokuSelectionScreen extends Screen {
 
     private static final ResourceLocation SCREEN_BORDER = AshsWorkshop.fromMod("textures/gui/workbench/screen_border.png");
 
-    private final Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> hasPlayed;
+    private final Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> viewable;
     private int screenWidth;
     private int screenHeight;
     private int borderSize;
@@ -42,9 +42,9 @@ public class SudokuSelectionScreen extends Screen {
     private int leftPos;
     private int topPos;
 
-    public SudokuSelectionScreen(Component title, Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> hasPlayed, boolean fullscreen) {
+    public SudokuSelectionScreen(Component title, Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> viewable, boolean fullscreen) {
         super(title);
-        this.hasPlayed = hasPlayed;
+        this.viewable = viewable;
         this.fullscreen = fullscreen;
     }
 
@@ -115,7 +115,13 @@ public class SudokuSelectionScreen extends Screen {
 
             // Loop through available grids and display status appropriately
             this.minecraft.level.registryAccess().registryOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).holders()
-                    .forEach(settings -> this.addEntry(new SudokuEntry(settings, SudokuSelectionScreen.this.hasPlayed.getOrDefault(settings, SudokuGridSettings.SolutionState.NEW))));
+                    .forEach(settings -> {
+                        // Only show unlocked entries
+                        var state = SudokuSelectionScreen.this.viewable.get(settings);
+                        if (state != null) {
+                            this.addEntry(new SudokuEntry(settings, state));
+                        }
+                    });
         }
 
         @Override

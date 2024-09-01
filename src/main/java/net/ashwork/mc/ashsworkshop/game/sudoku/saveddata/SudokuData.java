@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class SudokuData extends SavedData {
@@ -72,30 +73,43 @@ public class SudokuData extends SavedData {
 
     public void updateGrid(SudokuGrid grid) {
         // Assume that any grid sent back will differ
-        this.grids.put(grid.getSettings(), new SudokuInfo(grid));
+        this.update(grid.getSettings(), (settings, info) -> (info == null) ? new SudokuInfo(grid) : info.update(grid));
+    }
+
+    public void enableView(Holder<SudokuGridSettings> settings) {
+        this.update(settings, (st, info) -> (info == null) ? new SudokuInfo(new SudokuGrid(st), SudokuGridSettings.SolutionState.NEW, true) : info.view(true));
+    }
+
+    private void update(Holder<SudokuGridSettings> settings, BiFunction<Holder<SudokuGridSettings>, SudokuInfo, SudokuInfo> compute) {
+        this.grids.compute(settings, compute);
         this.setDirty();
     }
 
     public Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> getPlayedGrids() {
-        return this.grids.values().stream()
+        return this.grids.values().stream().filter(SudokuInfo::canView)
                 .collect(Collectors.toMap(info -> info.grid().getSettings(), SudokuInfo::state));
+    }
+
+    public boolean canView(Holder<SudokuGridSettings> settings) {
+        return this.grids.containsKey(settings) && this.grids.get(settings).canView();
     }
 
     public SudokuGrid getGrid(Holder<SudokuGridSettings> settings) {
         return this.grids.get(settings).grid();
     }
 
-    public record SudokuInfo(SudokuGrid grid, SudokuGridSettings.SolutionState state) {
+    public record SudokuInfo(SudokuGrid grid, SudokuGridSettings.SolutionState state, boolean canView) {
 
         public static final Codec<SudokuInfo> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         SudokuGrid.CODEC.fieldOf("grid").forGetter(SudokuInfo::grid),
-                        SudokuGridSettings.SolutionState.CODEC.fieldOf("state").forGetter(SudokuInfo::state)
+                        SudokuGridSettings.SolutionState.CODEC.fieldOf("state").forGetter(SudokuInfo::state),
+                        Codec.BOOL.optionalFieldOf("can_view", false).forGetter(SudokuInfo::canView)
                 ).apply(instance, SudokuInfo::new)
         );
 
         public SudokuInfo(SudokuGrid grid) {
-            this(grid, grid.checkSolution());
+            this(grid, grid.checkSolution(), false);
         }
 
         private SudokuInfo recheckSolution(Runnable setDirty) {
@@ -110,10 +124,18 @@ public class SudokuData extends SavedData {
             if (newState != this.state) {
                 // If state differs, set dirty and recreate info
                 setDirty.run();
-                return new SudokuInfo(this.grid, newState);
+                return new SudokuInfo(this.grid, newState, this.canView);
             } else {
                 return this;
             }
+        }
+
+        public SudokuInfo update(SudokuGrid grid) {
+            return new SudokuInfo(grid, grid.checkSolution(), this.canView);
+        }
+
+        public SudokuInfo view(boolean canView) {
+            return new SudokuInfo(this.grid, this.state, canView);
         }
     }
 }
