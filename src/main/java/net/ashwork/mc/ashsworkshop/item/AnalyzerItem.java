@@ -1,7 +1,6 @@
 package net.ashwork.mc.ashsworkshop.item;
 
-import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
-import net.ashwork.mc.ashsworkshop.analysis.AnalyzableBlock;
+import net.ashwork.mc.ashsworkshop.analysis.BlockAnalysis;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,12 +31,12 @@ public class AnalyzerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (!(state.getBlock() instanceof AnalyzableBlock analyzable) || context.getPlayer() == null) {
+        if (!(state.getBlock() instanceof BlockAnalysis.Analyzable analyzable) || context.getPlayer() == null) {
             return super.useOn(context);
         }
 
         var holder = context.getPlayer().getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
-        if (!analyzable.analyze(state, context, holder)) {
+        if (!holder.analyze(analyzable.getResource(state, context))) {
             // Already analyzed
             return InteractionResult.FAIL;
         }
@@ -54,7 +53,7 @@ public class AnalyzerItem extends Item {
             }
 
             var holder = player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
-            holder.finishAnalyzing();
+            holder.finishAnalysis();
         }
         return super.finishUsingItem(stack, level, entity);
     }
@@ -64,7 +63,7 @@ public class AnalyzerItem extends Item {
         // Only stop analyzing if the player hasn't finished using the item
         if (entity instanceof Player player) {
             var holder = player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
-            holder.stopAnalyzing();
+            holder.stopAnalysis();
         }
         super.releaseUsing(stack, level, entity, timeCharged);
     }

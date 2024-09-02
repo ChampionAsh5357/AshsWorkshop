@@ -17,6 +17,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 // TODO: Document, implement
@@ -44,6 +45,21 @@ public interface WorkshopCodecs {
             buffer.writeChar(value);
         }
     };
+
+    static <T> Codec<Set<T>> set(Codec<T> elementCodec) {
+        return set(elementCodec, false);
+    }
+
+    static <T> Codec<Set<T>> set(Codec<T> elementCodec, boolean skipSizeCheck) {
+        return elementCodec.listOf().comapFlatMap(
+                list -> {
+                    Set<T> result = Set.copyOf(list);
+                    return skipSizeCheck || list.size() == result.size()
+                            ? DataResult.success(result)
+                            : DataResult.error(() -> "Duplicate elements within the list.", result);
+                }, List::copyOf
+        );
+    }
 
     static <B extends ByteBuf, V> StreamCodec.CodecOperation<B, V, Set<V>> setStreamCodec() {
         return codec -> ByteBufCodecs.collection(HashSet::new, codec);

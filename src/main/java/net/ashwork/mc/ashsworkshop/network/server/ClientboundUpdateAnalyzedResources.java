@@ -6,6 +6,8 @@
 package net.ashwork.mc.ashsworkshop.network.server;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisHolder;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;
 import net.ashwork.mc.ashsworkshop.util.WorkshopCodecs;
 import net.minecraft.core.Holder;
@@ -19,15 +21,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public record ClientboundUpdateAnalyzedResources(Set<ResourceLocation> analyzedResources, boolean clear) implements CustomPacketPayload {
+public record ClientboundUpdateAnalyzedResources(Map<Analysis<?>, Set<ResourceLocation>> analyzedResources, boolean clear) implements CustomPacketPayload {
 
-    public ClientboundUpdateAnalyzedResources(Set<ResourceLocation> analyzedResources) {
-        this(analyzedResources, false);
+    public ClientboundUpdateAnalyzedResources(Analysis<?> analysis, ResourceLocation resource) {
+        this(Map.of(analysis, Set.of(resource)), false);
     }
 
     public static final Type<ClientboundUpdateAnalyzedResources> TYPE = new Type<>(AshsWorkshop.fromMod("update_analyzed_resources"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateAnalyzedResources> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC.apply(WorkshopCodecs.setStreamCodec()), ClientboundUpdateAnalyzedResources::analyzedResources,
+            AnalysisHolder.STREAM_CODEC, ClientboundUpdateAnalyzedResources::analyzedResources,
             ByteBufCodecs.BOOL, ClientboundUpdateAnalyzedResources::clear,
             ClientboundUpdateAnalyzedResources::new
     );

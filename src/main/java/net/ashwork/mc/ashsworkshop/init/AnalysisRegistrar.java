@@ -1,6 +1,8 @@
 package net.ashwork.mc.ashsworkshop.init;
 
-import net.ashwork.mc.ashsworkshop.analysis.SimpleAnalysis;
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
+import net.ashwork.mc.ashsworkshop.analysis.BlockAnalysis;
 
 import java.util.function.Supplier;
 
@@ -9,10 +11,10 @@ import java.util.function.Supplier;
  */
 public class AnalysisRegistrar {
 
-    public static final Supplier<SimpleAnalysis> WORKBENCH = simpleAnalysis("workbench");
+    public static final Supplier<BlockAnalysis> BLOCK = analysis("block", BlockAnalysis::new);
 
-    private static Supplier<SimpleAnalysis> simpleAnalysis(String name) {
-        return WorkshopRegistrars.ANALYSIS.register(name, SimpleAnalysis::new);
+    private static <C extends AnalysisContext, A extends Analysis<C>> Supplier<A> analysis(String name, Supplier<A> analysis) {
+        return WorkshopRegistrars.ANALYSIS.register(name, analysis);
     }
 
     /**

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class AttachmentTypeRegistrar {
 
     public static final Supplier<AttachmentType<AnalysisHolder>> ANALYSIS_HOLDER = WorkshopRegistrars.ATTACHMENT_TYPE.register("analysis_holder",
-            () -> AttachmentType.serializable(AnalysisHolder::new).copyOnDeath().copyHandler(AnalysisHolder::copy).build());
+            () -> AttachmentType.builder(AnalysisHolder::new).serialize(AnalysisHolder.CODEC).copyOnDeath().copyHandler(AnalysisHolder::copy).build());
 
     /**
      * Loads the registrar class and registers all registry objects.

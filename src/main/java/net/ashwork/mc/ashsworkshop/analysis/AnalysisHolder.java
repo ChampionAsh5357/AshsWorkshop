@@ -1,133 +1,155 @@
 package net.ashwork.mc.ashsworkshop.analysis;
 
+import com.mojang.serialization.Codec;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.network.server.ClientboundUpdateAnalyzedResources;
+import net.ashwork.mc.ashsworkshop.util.WorkshopCodecs;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * A holder, only applicable to a player, that contains the information about the analyzing reosurces.
+ * A holder that contains information about the analyzed resources of the entity.
  */
-public class AnalysisHolder implements INBTSerializable<ListTag> {
+public class AnalysisHolder {
 
-    private final Player player;
-    private final Set<ResourceLocation> analyzedResources;
+    public static final Codec<AnalysisHolder> CODEC = Codec.unboundedMap(
+            WorkshopRegistries.ANALYSIS.byNameCodec(),
+            WorkshopCodecs.set(ResourceLocation.CODEC)
+    ).xmap(AnalysisHolder::new, AnalysisHolder::analyzedResources);
+    public static final StreamCodec<RegistryFriendlyByteBuf, Map<Analysis<?>, Set<ResourceLocation>>> STREAM_CODEC = ByteBufCodecs.map(
+            HashMap::new, ByteBufCodecs.registry(WorkshopRegistries.ANALYSIS_KEY), ResourceLocation.STREAM_CODEC.apply(WorkshopCodecs.setStreamCodec())
+    );
 
-    private Analysis<?> analyzing;
-    private AnalysisContext context;
+    private final Map<Analysis<?>, Set<ResourceLocation>> analyzedResources;
+    private Analysis.Resource<?, ?> currentAnalysis;
 
-    public AnalysisHolder(IAttachmentHolder holder) {
-        this.player = (Player) holder;
-        this.analyzedResources = new HashSet<>();
+    public AnalysisHolder() {
+        this.analyzedResources = new HashMap<>();
+        this.currentAnalysis = null;
     }
 
-    // Start analyzing the thing
-    public <C extends AnalysisContext, A extends Analysis<C>> boolean analyze(A analyzing, C context) {
-        // Do not analyze if it already has been
-        // Make sure there isn't anything analysis specific blocking it
-        if (this.isAnalyzed(analyzing, context) || !analyzing.canAnalyze(this.player, context)) {
-            return false;
-        }
-
-        this.analyzing = analyzing;
-        this.context = context;
-        return true;
+    private AnalysisHolder(Map<Analysis<?>, Set<ResourceLocation>> analyzedResources) {
+        this();
+        this.unlockResources(analyzedResources);
     }
 
-    // When the analysis is finished
-    public void finishAnalyzing() {
-        // Handle edge case
-        if (this.analyzing == null || this.context == null) {
-            this.stopAnalyzing();
-            return;
-        }
-
-        if (this.context.validate(this.player)) {
-            this.unlock();
-        }
-
-        this.stopAnalyzing();
+    /**
+     * {@return an unmodifiable map of the currently analyzed resources}
+     */
+    public Map<Analysis<?>, Set<ResourceLocation>> analyzedResources() {
+        return Collections.unmodifiableMap(this.analyzedResources);
     }
 
-    public <C extends AnalysisContext, A extends Analysis<C>> boolean isAnalyzed(A analysis, @Nullable C context) {
-        return this.analyzedResources.contains(analysis.getAnalyzedName(context));
+    /**
+     * Unlocks the provided resources, does not trigger any subsequent unlocking logic.
+     *
+     * @param analyzedResources the resources to unlock
+     */
+    public void unlockResources(Map<Analysis<?>, Set<ResourceLocation>> analyzedResources) {
+        analyzedResources.forEach((analysis, resources) ->
+                this.analyzedResources.computeIfAbsent(analysis, k -> new HashSet<>()).addAll(resources)
+        );
     }
 
-    public Set<ResourceLocation> analyzedResources() {
-        return Collections.unmodifiableSet(this.analyzedResources);
-    }
-
-    public void setResources(Set<ResourceLocation> analyzedResources) {
+    /**
+     * Sets the current list of analyzed resources. This should only be called the client.
+     *
+     * @param analyzedResources the list of resources to set
+     */
+    public void setResources(Map<Analysis<?>, Set<ResourceLocation>> analyzedResources) {
         this.clear();
-        this.analyzedResources.addAll(analyzedResources);
+        this.unlockResources(analyzedResources);
     }
 
-    public boolean unlockResources(Set<ResourceLocation> analyzedResources) {
-        return this.analyzedResources.addAll(analyzedResources);
-    }
-
-    public boolean remove(ResourceLocation resource) {
-        return this.analyzedResources.remove(resource);
-    }
-
+    /**
+     * Clears all analyzed resources.
+     */
     public void clear() {
         this.analyzedResources.clear();
     }
 
-    // Remove reference to objects
-    public void stopAnalyzing() {
-        this.analyzing = null;
-        this.context = null;
-    }
-
-    private <C extends AnalysisContext, A extends Analysis<C>> void unlock() {
-        @SuppressWarnings("unchecked")
-        C context = (C) this.context;
-        @SuppressWarnings("unchecked")
-        A analysis = (A) this.analyzing;
-
-        var key = analysis.getAnalyzedName(context);
-        this.analyzedResources.add(key);
-
-        // Send single key
-        if (this.player instanceof ServerPlayer sp) {
-            PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(Set.of(key)));
+    /**
+     * Begins the analysis process of the current resource.
+     *
+     * @param resource the resources to analyze
+     * @return {@code true} if the analysis could be started, {@code false} otherwise
+     * @param <C> the type of the analysis context
+     */
+    public <C extends AnalysisContext> boolean analyze(Analysis.Resource<C, Analysis<C>> resource) {
+        // Only analyze if we haven't already analyzed the resource
+        // Do not analyze if there is a blocker
+        if (this.isAnalyzed(resource) || !resource.canAnalyze()) {
+            return false;
         }
-        analysis.unlock(this.player, context);
+
+        this.currentAnalysis = resource;
+        return true;
     }
 
-    private static ResourceLocation analysisKey(Analysis<?> analysis) {
-        return WorkshopRegistries.ANALYSIS.getKey(analysis);
+    /**
+     * @param resource the resource to analyze
+     * {@return {@code true} if the resource was already analyzed, {@code false} otherwise}
+     * @param <C> the type of the analysis context
+     */
+    public <C extends AnalysisContext> boolean isAnalyzed(Analysis.Resource<C, Analysis<C>> resource) {
+        return this.analyzedResources.getOrDefault(resource.analysis(), Collections.emptySet()).contains(resource.getResourceToAnalyze());
     }
 
-    @UnknownNullability
-    @Override
-    public ListTag serializeNBT(HolderLookup.Provider provider) {
-        ListTag tag = new ListTag();
-        this.analyzedResources.forEach(name -> tag.add(StringTag.valueOf(name.toString())));
-        return tag;
+    /**
+     * @param analysis the analysis being performed
+     * @param resource the analyzed resource
+     * {@return {@code true} if the resource is already analyzed, {@code false} otherwise}
+     */
+    public boolean isAnalyzed(Analysis<?> analysis, ResourceLocation resource) {
+        return this.analyzedResources.getOrDefault(analysis, Collections.emptySet()).contains(resource);
     }
 
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, ListTag nbt) {
-        nbt.forEach(tag -> this.analyzedResources.add(ResourceLocation.parse(tag.getAsString())));
+    /**
+     * Finishes the analysis process by unlocking whatever was available on the resource.
+     */
+    public void finishAnalysis() {
+        // Handle edge case
+        if (this.currentAnalysis == null) {
+            return;
+        }
+
+        if (this.currentAnalysis.verifyResourceConditions()) {
+            var resource = this.currentAnalysis.getResourceToAnalyze();
+            this.analyzedResources.computeIfAbsent(this.currentAnalysis.analysis(), a -> new HashSet<>())
+                    .add(resource);
+
+            // Send packet to client
+            if (this.currentAnalysis.player() instanceof ServerPlayer sp) {
+                PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(this.currentAnalysis.analysis(), resource));
+            }
+
+            this.currentAnalysis.unlock();
+        }
+
+        this.stopAnalysis();
+    }
+
+    /**
+     * Stops the current analysis.
+     */
+    public void stopAnalysis() {
+        this.currentAnalysis = null;
     }
 
     public AnalysisHolder copy(IAttachmentHolder holder, HolderLookup.Provider provider) {
-        var result = new AnalysisHolder(holder);
+        var result = new AnalysisHolder();
         result.unlockResources(this.analyzedResources);
         return result;
     }

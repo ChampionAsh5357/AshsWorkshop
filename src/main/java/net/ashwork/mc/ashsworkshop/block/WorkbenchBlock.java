@@ -7,10 +7,7 @@ package net.ashwork.mc.ashsworkshop.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import net.ashwork.mc.ashsworkshop.analysis.Analysis;
-import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
-import net.ashwork.mc.ashsworkshop.analysis.AnalysisHolder;
-import net.ashwork.mc.ashsworkshop.analysis.AnalyzableBlock;
+import net.ashwork.mc.ashsworkshop.analysis.BlockAnalysis;
 import net.ashwork.mc.ashsworkshop.init.AnalysisRegistrar;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
@@ -24,7 +21,6 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -40,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A block representing the workbench of this mod.
  */
-public class WorkbenchBlock extends HorizontalDirectionalBlock implements AnalyzableBlock {
+public class WorkbenchBlock extends HorizontalDirectionalBlock implements BlockAnalysis.Analyzable {
 
     /**
      * A codec representing a serialized block.
@@ -104,7 +100,9 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyz
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         // Do not open if the object isn't analyzed
-        if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(AnalysisRegistrar.WORKBENCH.get(), new AnalysisContext.BlockContext(level, pos, state))) {
+        if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(
+                AnalysisRegistrar.BLOCK.get().with(new BlockAnalysis.Context(player, level, pos, state))
+        )) {
             return InteractionResult.FAIL;
         }
 
@@ -125,10 +123,5 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements Analyz
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-    }
-
-    @Override
-    public boolean analyze(BlockState state, UseOnContext context, AnalysisHolder holder) {
-        return holder.analyze(AnalysisRegistrar.WORKBENCH.get(), new AnalysisContext.BlockContext(context.getLevel(), context.getClickedPos(), state));
     }
 }

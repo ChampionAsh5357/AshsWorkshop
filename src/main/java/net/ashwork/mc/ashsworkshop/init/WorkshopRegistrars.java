@@ -11,6 +11,7 @@ import net.ashwork.mc.ashsworkshop.analysis.Analysis;
 import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.marking.SudokuMarking;
 import net.ashwork.mc.ashsworkshop.game.sudoku.constraint.SudokuConstraint;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -68,6 +69,7 @@ public class WorkshopRegistrars {
     static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(Registries.RECIPE_TYPE, AshsWorkshop.ID);
     static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, AshsWorkshop.ID);
     static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPE = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, AshsWorkshop.ID);
+    static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPE_INFO = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, AshsWorkshop.ID);
 
     /**
      * Registers a block with an item.
@@ -99,6 +101,7 @@ public class WorkshopRegistrars {
         RECIPE_SERIALIZER.register(modBus);
         ATTACHMENT_TYPE.register(modBus);
         ANALYSIS.register(modBus);
+        ARGUMENT_TYPE_INFO.register(modBus);
 
         // Load registry classes
         BlockRegistrar.register();
@@ -109,6 +112,7 @@ public class WorkshopRegistrars {
         RecipeRegistrar.register();
         AttachmentTypeRegistrar.register();
         AnalysisRegistrar.register();
+        ArgumentTypeInfoRegistrar.register();
 
         // Register events
         modBus.addListener(WorkshopRegistrars::buildTabs);

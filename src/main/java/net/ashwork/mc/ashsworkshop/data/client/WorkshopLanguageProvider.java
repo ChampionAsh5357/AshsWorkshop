@@ -6,6 +6,7 @@
 package net.ashwork.mc.ashsworkshop.data.client;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.command.AnalyzeCommand;
 import net.ashwork.mc.ashsworkshop.command.WorkshopCommand;
 import net.ashwork.mc.ashsworkshop.init.ItemRegistrar;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
@@ -40,10 +41,11 @@ public class WorkshopLanguageProvider extends LanguageProvider {
         this.add(WorkshopComponents.LIGHTNING_ROD_RECIPE_TYPE_KEY, "Lightning Rod");
 
         // Commands
-        this.add(WorkshopCommand.ANALYZE_ADD_FAILED_NONE, "No analyses are provided to unlock");
-        this.add(WorkshopCommand.ANALYZE_ADD_FAILED_EXISTS, "Analyses are already unlocked: %s");
-        this.add(WorkshopCommand.ANALYZE_ADD_SUCCESS, "Unlocking analyses for %s: %s");
-        this.add(WorkshopCommand.ANALYZE_CLEAR_SUCCESS, "Cleared analyses from %s");
+        this.add(AnalyzeCommand.ANALYZE_FAILED_PLAYER, "The analyze command must be run for a player.");
+        this.add(AnalyzeCommand.ANALYZE_ADD_FAILED_EXISTS, "Resource for analysis '%s' already unlocked: %s");
+        this.add(AnalyzeCommand.ANALYZE_ADD_FAILED_UNLOCK, "Resource '%s' for analysis '%s' failed to unlock: %s");
+        this.add(AnalyzeCommand.ANALYZE_ADD_SUCCESS, "Unlocking resource for analysis '%s': %s");
+        this.add(AnalyzeCommand.ANALYZE_CLEAR_SUCCESS, "Cleared resources for analyses");
 
         for (int i = 0; i < 9; i++) {
             this.add(WorkshopComponents.createWithSuffix(SudokuGridSettingsRegistrar.settings(
