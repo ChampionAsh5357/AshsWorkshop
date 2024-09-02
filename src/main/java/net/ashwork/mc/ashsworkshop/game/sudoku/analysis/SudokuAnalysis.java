@@ -20,7 +20,8 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
     @Override
     public boolean canAnalyze(Context context) {
         if (context.player().get() instanceof ServerPlayer sp) {
-            return SudokuData.init(sp).canView(context.settings());
+            // Only analyze if it can't be viewed
+            return !SudokuData.init(sp).canView(context.settings());
         }
 
         return Analysis.super.canAnalyze(context);
@@ -29,6 +30,7 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
     @Override
     public void unlock(Context context) {
         if (context.player().get() instanceof ServerPlayer sp) {
+            // Set view to true
             SudokuData.init(sp).setView(context.settings(), true);
         }
     }
@@ -41,6 +43,7 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
 
     @Override
     public void modifyFromCommand(ServerPlayer player, HolderLookup.Provider registries, ResourceLocation analyzed, boolean unlocking) {
+        // Set view based on lock state
         SudokuData.init(player).setView(registries.holderOrThrow(ResourceKey.create(WorkshopRegistries.SUDOKU_GRID_KEY, analyzed)), unlocking);
     }
 
@@ -49,5 +52,5 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
         return registries.lookupOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).listElementIds().map(ResourceKey::location);
     }
 
-    public record Context(WeakReference<Player> player, Holder<SudokuGridSettings> settings) implements AnalysisContext { }
+    public record Context(WeakReference<Player> player, Holder<SudokuGridSettings> settings) implements AnalysisContext {}
 }

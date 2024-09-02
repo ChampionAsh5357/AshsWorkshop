@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+/**
+ * The data of the stored sudoku grids. Each sudoku grid is stored within its own subfolder for each player.
+ */
 public class SudokuData extends SavedData {
 
     private static final String ID = AshsWorkshop.fromMod("sudoku_grid").toString().replaceAll(":", "/");
@@ -33,6 +36,12 @@ public class SudokuData extends SavedData {
 
     private final Map<Holder<SudokuGridSettings>, SudokuInfo> grids;
 
+    /**
+     * Gets the sudoku data for that player, or creates one if it doesn't exist.
+     *
+     * @param player the player
+     * @return the {@code SudokuData} instance
+     */
     public static SudokuData init(ServerPlayer player) {
         return player.getServer().overworld()
                 .getDataStorage().computeIfAbsent(new SavedData.Factory<>(SudokuData::new, SudokuData::new), getPlayerSavedData(player));
@@ -71,11 +80,22 @@ public class SudokuData extends SavedData {
         return CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), this.grids).result().map(CompoundTag.class::cast).orElseThrow();
     }
 
+    /**
+     * Updates the stored sudoku grid, rechecking the solution as necessary.
+     *
+     * @param grid the grid to update
+     */
     public void updateGrid(SudokuGrid grid) {
         // Assume that any grid sent back will differ
         this.update(grid.getSettings(), (settings, info) -> (info == null) ? new SudokuInfo(grid) : info.update(grid));
     }
 
+    /**
+     * Sets whether the grid is viewable
+     *
+     * @param settings the settings of the grid
+     * @param canView whether the grid can be viewed in the selection menu
+     */
     public void setView(Holder<SudokuGridSettings> settings, boolean canView) {
         this.update(settings, (st, info) -> (info == null) ? new SudokuInfo(new SudokuGrid(st), SudokuGridSettings.SolutionState.NEW, canView) : info.view(canView));
     }
@@ -85,15 +105,26 @@ public class SudokuData extends SavedData {
         this.setDirty();
     }
 
+    /**
+     * {@return the grids the player has started and analyzed}
+     */
     public Map<Holder<SudokuGridSettings>, SudokuGridSettings.SolutionState> getPlayedGrids() {
         return this.grids.values().stream().filter(SudokuInfo::canView)
                 .collect(Collectors.toMap(info -> info.grid().getSettings(), SudokuInfo::state));
     }
 
+    /**
+     * @param settings the settings of the grid
+     * {@return {@code true} if the grid can be viewed, {@code false} otherwise}
+     */
     public boolean canView(Holder<SudokuGridSettings> settings) {
-        return this.grids.containsKey(settings) && this.grids.get(settings).canView();
+        return !this.grids.containsKey(settings) || this.grids.get(settings).canView();
     }
 
+    /**
+     * @param settings
+     * {@return the sudoku grid based on the settings}
+     */
     public SudokuGrid getGrid(Holder<SudokuGridSettings> settings) {
         return this.grids.get(settings).grid();
     }

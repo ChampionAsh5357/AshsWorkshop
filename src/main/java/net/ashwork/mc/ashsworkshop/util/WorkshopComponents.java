@@ -12,7 +12,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 
-// TODO: Document
+/**
+ * An interface containing components and translation keys used by this mod.
+ */
 public interface WorkshopComponents {
 
     String WORKBENCH_MENU_KEY = createFromRegistryObject(MenuRegistrar.WORKBENCH);

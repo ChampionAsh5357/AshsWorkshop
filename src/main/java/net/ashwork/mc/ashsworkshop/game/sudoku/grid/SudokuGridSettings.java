@@ -35,6 +35,15 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A datapack object that represents a sudoku grid that can be solved.
+ *
+ * @param gridLength the length of one size of the square grid
+ * @param initialValues the initial values within the grid, locked
+ * @param constraints the constraints applied to the grid
+ * @param solutionMD5 the MD5 hash of the solution, if present
+ * @param attribution the attribution of the original grid, if present
+ */
 public record SudokuGridSettings(int gridLength, List<InitialValue> initialValues, HolderSet<SudokuConstraint> constraints, Optional<String> solutionMD5, Optional<AttributionInfo> attribution) {
 
     public static final Codec<SudokuGridSettings> DIRECT_CODEC = RecordCodecBuilder.create(instance ->
@@ -70,6 +79,9 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         }
     }
 
+    /**
+     * Validates the constraints are legal.
+     */
     public void validate() {
         // Once everything is set, validate all constraints
         this.constraints.stream().filter(constr -> !constr.value().validate(this)).findFirst().ifPresent(c -> {
@@ -137,6 +149,12 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             this.initialValues = new ArrayList<>();
         }
 
+        /**
+         * Constructs the initial values from a string, written from left-to-right, top-to-bottom
+         *
+         * @param values the initial values of the grid
+         * @return the builder instance
+         */
         public Builder initialValues(String values) {
             for (var i = 0; i < values.length(); i++) {
                 var val = values.charAt(i);
@@ -164,6 +182,12 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             return this;
         }
 
+        /**
+         * Constructs the solution from a string and generates the hash, written from left-to-right, top-to-bottom
+         *
+         * @param solution the solution of the grid
+         * @return the builder instance
+         */
         public Builder solution(String solution) {
             if (this.initialString != null) {
                 for (var i = 0; i < this.initialString.length(); i++) {
@@ -208,10 +232,16 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             return this.displayName;
         }
 
+        /**
+         * {@return whether there is server data for the grid}
+         */
         public boolean getServerData() {
             return this != NEW;
         }
 
+        /**
+         * {@return whether the state is considered 'complete' to the best of our knowledge}
+         */
         public boolean isComplete() {
             return this.isComplete;
         }

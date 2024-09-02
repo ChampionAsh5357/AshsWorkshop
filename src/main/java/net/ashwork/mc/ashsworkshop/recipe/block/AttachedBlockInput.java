@@ -10,6 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
+/**
+ * A recipe input that handles a block within a world with a catalyst attached to one of its faces.
+ *
+ * @param inWorld the block in the world context
+ * @param attachedFace the face the block is attached to
+ */
 public record AttachedBlockInput(BlockInWorld inWorld, Direction attachedFace) implements RecipeInput {
 
     @Override

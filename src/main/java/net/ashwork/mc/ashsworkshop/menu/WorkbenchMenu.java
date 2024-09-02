@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 
-// TODO: Document
+// Currently a dummy for the front end screen, no idea if it should be kept yet
 public class WorkbenchMenu extends AbstractContainerMenu {
 
     private final ContainerLevelAccess access;

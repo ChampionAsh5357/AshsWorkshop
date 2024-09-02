@@ -20,7 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// TODO: Document, implement
+/**
+ * An interface containing codecs and stream codecs used by this mod.
+ */
 public interface WorkshopCodecs {
 
     Codec<URI> URI_LINK = Codec.STRING.comapFlatMap(uri -> {

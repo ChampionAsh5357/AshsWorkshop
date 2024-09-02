@@ -26,6 +26,7 @@ public class LightningRodBlockMixin {
 
     @Inject(at = @At("HEAD"), method = "onLightningStrike", cancellable = true)
     public void onLightningStrike(BlockState state, Level level, BlockPos pos, CallbackInfo ci) {
+        // Waterlogged disables the lightning strike
         if (state.getValue(LightningRodBlock.WATERLOGGED)) {
             return;
         }

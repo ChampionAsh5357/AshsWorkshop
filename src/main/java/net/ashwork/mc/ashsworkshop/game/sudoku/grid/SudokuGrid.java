@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+/**
+ * The grid the player interacts with when attempting to complete a sudoku puzzle.
+ */
 public class SudokuGrid {
 
     public static final Codec<SudokuGrid> CODEC = RecordCodecBuilder.create(instance ->
@@ -49,6 +52,7 @@ public class SudokuGrid {
         this.settings = settings;
         this.boxes = new ArrayList<>(this.getGridLength() * this.getGridLength());
 
+        // Iterate through all initial values and set them in the grid
         Iterator<SudokuGridSettings.InitialValue> iter = settings.value().initialValues().iterator();
         var initialValue = iter.next();
         for (int i = 0; i < this.getGridLength() * this.getGridLength(); i++) {
@@ -71,6 +75,7 @@ public class SudokuGrid {
         boxIndices = new ArrayList<>(boxIndices);
         boxIndices.sort(Comparator.comparingInt(value -> value.index(this.getGridLength())));
 
+        // Iterate through all initial and marked boxes and set them in the grid
         Iterator<SudokuGridSettings.InitialValue> initialIter = settings.value().initialValues().iterator();
         Iterator<BoxIndex> boxIter = boxIndices.iterator();
         var initialValue = initialIter.next();
@@ -105,6 +110,13 @@ public class SudokuGrid {
         return this.settings;
     }
 
+    /**
+     * Applies the constraint of the grid.
+     *
+     * @param rowIdx the index of the row the constraint is being applied to
+     * @param columnIdx the index of the column the constraint is being applied to
+     * @param constraint a (row, column) consumer that accepts the indexes that this position conflicts with
+     */
     public void applyConstraints(int rowIdx, int columnIdx, BiConsumer<Integer, Integer> constraint) {
         this.getSettings().value().constraints().forEach(constr -> constr.value().apply(this.getSettings().value(), rowIdx, columnIdx, constraint));
     }
@@ -130,6 +142,9 @@ public class SudokuGrid {
         return boxIndices;
     }
 
+    /**
+     * {@return the solution state of the grid after it has been checked}
+     */
     public SudokuGridSettings.SolutionState checkSolution() {
         return this.settings.value().hasSolution()
                 ? this.checkSolutionFromHash()
@@ -149,6 +164,7 @@ public class SudokuGrid {
         return this.settings.value().checkSolution(builder.toString());
     }
 
+    // Brute force approach
     private SudokuGridSettings.SolutionState checkSolutionFromConstraints() {
         MutableBoolean isUnsolved = new MutableBoolean(false);
         // Apply constraints to each box and mark on conflict

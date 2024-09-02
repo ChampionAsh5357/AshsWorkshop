@@ -49,7 +49,6 @@ public class AshsWorkshop {
         forgeBus.addListener(AshsWorkshop::registerCommands);
     }
 
-    // TODO: Document
     public static ResourceLocation fromMod(String path) {
         return ResourceLocation.fromNamespaceAndPath(AshsWorkshop.ID, path);
     }
