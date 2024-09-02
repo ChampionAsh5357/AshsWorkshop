@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.ashwork.mc.ashsworkshop.game.sudoku.box.SudokuBox;
 import net.ashwork.mc.ashsworkshop.init.MarkingRegistrar;
+import net.ashwork.mc.ashsworkshop.util.WorkshopCodecs;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -135,7 +136,7 @@ public class SudokuGrid {
         for (int i = 0; i < this.boxes.size(); i++) {
             var box = this.boxes.get(i);
             if (box.containsData()) {
-                boxIndices.add(new BoxIndex((i / this.getGridLength()) + 1, (i % this.getGridLength()) + 1, box));
+                boxIndices.add(new BoxIndex(i / this.getGridLength(), i % this.getGridLength(), box));
             }
         }
 
@@ -193,31 +194,23 @@ public class SudokuGrid {
         return SudokuGridSettings.SolutionState.FINISHED_NOT_VALIDATED;
     }
 
-    public record BoxIndex(int row, int column, SudokuBox box) {
+    public record BoxIndex(int rowIdx, int columnIdx, SudokuBox box) {
         public static final Codec<BoxIndex> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("row").forGetter(SudokuGrid.BoxIndex::row),
-                        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("column").forGetter(SudokuGrid.BoxIndex::column),
-                        SudokuBox.CODEC.fieldOf("box").forGetter(SudokuGrid.BoxIndex::box)
-                ).apply(instance, SudokuGrid.BoxIndex::new)
+                        WorkshopCodecs.indexOrValue("row").forGetter(BoxIndex::rowIdx),
+                        WorkshopCodecs.indexOrValue("column").forGetter(BoxIndex::columnIdx),
+                        SudokuBox.CODEC.fieldOf("box").forGetter(BoxIndex::box)
+                ).apply(instance, BoxIndex::new)
         );
         private static final StreamCodec<RegistryFriendlyByteBuf, BoxIndex> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, BoxIndex::row,
-                ByteBufCodecs.VAR_INT, BoxIndex::column,
+                ByteBufCodecs.VAR_INT, BoxIndex::rowIdx,
+                ByteBufCodecs.VAR_INT, BoxIndex::columnIdx,
                 SudokuBox.STREAM_CODEC, BoxIndex::box,
                 BoxIndex::new
         );
 
-        public int columnIndex() {
-            return this.column - 1;
-        }
-
-        public int rowIndex() {
-            return this.row - 1;
-        }
-
         public int index(int gridLength) {
-            return this.rowIndex() * gridLength + this.columnIndex();
+            return this.rowIdx() * gridLength + this.columnIdx();
         }
     }
 }

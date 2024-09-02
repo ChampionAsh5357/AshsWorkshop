@@ -5,10 +5,12 @@
 
 package net.ashwork.mc.ashsworkshop.util;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.Util;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -60,6 +62,17 @@ public interface WorkshopCodecs {
                             ? DataResult.success(result)
                             : DataResult.error(() -> "Duplicate elements within the list.", result);
                 }, List::copyOf
+        );
+    }
+
+    static MapCodec<Integer> indexOrValue(String name) {
+        return Codec.mapEither(
+                Codec.intRange(0, Integer.MAX_VALUE).fieldOf(name + "_index"),
+                // If non-index, transform into index
+                Codec.intRange(1, Integer.MAX_VALUE).fieldOf(name).xmap(i -> i - 1, i -> i + 1)
+        ).xmap(
+                Either::unwrap,
+                Either::left
         );
     }
 

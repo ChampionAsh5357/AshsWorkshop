@@ -27,12 +27,10 @@ import net.minecraft.resources.ResourceKey;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -71,10 +69,10 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
 
         IntSet validator = new IntOpenHashSet();
         for (var value : this.initialValues) {
-            if (value.row() > this.gridLength || value.column() > this.gridLength) {
-                throw new IllegalArgumentException("Initial value (" + value.row() + ", " + value.column() + ") is not within grid " + this.gridLength);
-            } else if (!validator.add(value.row() * this.gridLength + value.column())) {
-                throw new IllegalArgumentException("Duplicate initial value position (" + value.row() + ", " + value.column() + ")");
+            if (value.rowIdx() >= this.gridLength || value.columnIdx() >= this.gridLength) {
+                throw new IllegalArgumentException("Initial index (" + value.rowIdx() + ", " + value.columnIdx() + ") is not within grid " + this.gridLength);
+            } else if (!validator.add(value.index(this.gridLength))) {
+                throw new IllegalArgumentException("Duplicate initial value index (" + value.rowIdx() + ", " + value.columnIdx() + ")");
             }
         }
     }
@@ -105,25 +103,17 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
         return DigestUtils.md5Hex(solution).toUpperCase(Locale.ROOT);
     }
 
-    public record InitialValue(int row, int column, Character value) {
+    public record InitialValue(int rowIdx, int columnIdx, Character value) {
         public static final Codec<InitialValue> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("row").forGetter(InitialValue::row),
-                        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("column").forGetter(InitialValue::column),
+                        WorkshopCodecs.indexOrValue("row").forGetter(InitialValue::rowIdx),
+                        WorkshopCodecs.indexOrValue("column").forGetter(InitialValue::columnIdx),
                         WorkshopCodecs.SUDOKU_VALUE.fieldOf("value").forGetter(InitialValue::value)
                 ).apply(instance, InitialValue::new)
         );
 
-        public int columnIndex() {
-            return this.column - 1;
-        }
-
-        public int rowIndex() {
-            return this.row - 1;
-        }
-
         public int index(int gridLength) {
-            return this.rowIndex() * gridLength + this.columnIndex();
+            return this.rowIdx * gridLength + this.columnIdx;
         }
     }
 
@@ -159,7 +149,7 @@ public record SudokuGridSettings(int gridLength, List<InitialValue> initialValue
             for (var i = 0; i < values.length(); i++) {
                 var val = values.charAt(i);
                 if (val != ' ') {
-                    this.initialValues.add(new InitialValue((i / this.gridLength) + 1, (i % this.gridLength) + 1, val));
+                    this.initialValues.add(new InitialValue(i / this.gridLength, i % this.gridLength, val));
                 }
             }
             this.initialString = values;
