@@ -1,6 +1,7 @@
 package net.ashwork.mc.ashsworkshop.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.datafixers.util.Function3;
 import net.ashwork.mc.ashsworkshop.analysis.Analysis;
 import net.ashwork.mc.ashsworkshop.command.argument.AnalysisArgument;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
@@ -27,22 +28,26 @@ public class AnalyzeCommand {
     public static final String ANALYZE_ADD_FAILED_UNLOCK = subFailure("add", "unlock");
     public static final String ANALYZE_ADD_SUCCESS = subSuccess("add");
     public static final String ANALYZE_CLEAR_SUCCESS = subSuccess("clear");
+    public static final String ANALYZE_REMOVE_FAILED_NONEXISTENT = subFailure("remove", "nonexistent");
+    public static final String ANALYZE_REMOVE_FAILED_LOCK = subFailure("remove", "lock");
+    public static final String ANALYZE_REMOVE_SUCCESS = subSuccess("remove");
 
     public static LiteralArgumentBuilder<CommandSourceStack> register(CommandBuildContext context) {
         return Commands.literal("analyze")
-                .then(addAnalyses(context))
+                .then(forAnalyses(context, "add", true, AnalyzeCommand::addAnalysis))
+                .then(forAnalyses(context, "remove", false, AnalyzeCommand::removeAnalysis))
                 .then(Commands.literal("clear").executes(ctx -> clearAnalyses(ctx.getSource())));
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> addAnalyses(CommandBuildContext context) {
-        var command = Commands.literal("add");
+    private static LiteralArgumentBuilder<CommandSourceStack> forAnalyses(CommandBuildContext context, String commandName, boolean inHolder, Function3<CommandSourceStack, Holder.Reference<Analysis<?>>, ResourceLocation, Integer> cmd) {
+        var command = Commands.literal(commandName);
 
         context.lookupOrThrow(WorkshopRegistries.ANALYSIS_KEY).listElements().forEach(analysis -> command.then(
                 Commands.literal(analysis.getRegisteredName())
                         .then(
-                                Commands.argument("resource", AnalysisArgument.analysis(context, analysis))
+                                Commands.argument("resource", AnalysisArgument.analysis(context, analysis, inHolder))
                                         .executes(
-                                                ctx -> addAnalysis(ctx.getSource(), analysis, AnalysisArgument.getAnalysis(ctx, "resource"))
+                                                ctx -> cmd.apply(ctx.getSource(), analysis, AnalysisArgument.getAnalysis(ctx, "resource"))
                                         )
                         )
         ));
@@ -78,6 +83,39 @@ public class AnalyzeCommand {
 
         source.sendSuccess(
                 () -> Component.translatable(ANALYZE_ADD_SUCCESS, analysis.key().location().toString(), resource.toString()),
+                true
+        );
+        return 1;
+    }
+
+    private static int removeAnalysis(CommandSourceStack source, Holder.Reference<Analysis<?>> analysis, ResourceLocation resource) {
+        // Make sure source is a player
+        if (!source.isPlayer()) {
+            source.sendFailure(Component.translatable(ANALYZE_FAILED_PLAYER));
+            return 0;
+        }
+
+        var sp = source.getPlayer();
+        var holder = sp.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
+
+        // Make sure resource is not already analyzed
+        if (!holder.isAnalyzed(analysis.value(), resource)) {
+            source.sendFailure(Component.translatable(ANALYZE_REMOVE_FAILED_NONEXISTENT, analysis.key().location().toString(), resource.toString()));
+            return 0;
+        }
+
+        // Unlock resource and run modify command
+        try {
+            analysis.value().modifyFromCommand(sp, source.registryAccess(), resource, false);
+        } catch (Exception e) {
+            source.sendFailure(Component.translatable(ANALYZE_REMOVE_FAILED_LOCK, analysis.key().location().toString(), resource.toString(), e.getMessage()));
+            return 0;
+        }
+        holder.lockResource(analysis.value(), resource);
+        PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(holder.analyzedResources(), true));
+
+        source.sendSuccess(
+                () -> Component.translatable(ANALYZE_REMOVE_SUCCESS, analysis.key().location().toString(), resource.toString()),
                 true
         );
         return 1;

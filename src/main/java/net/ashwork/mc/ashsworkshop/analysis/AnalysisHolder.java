@@ -64,6 +64,16 @@ public class AnalysisHolder {
     }
 
     /**
+     * Locks the provided resource, does not trigger any subsequent locking logic.
+     *
+     * @param analysis the analysis perform
+     * @param resource the resource to lock
+     */
+    public void lockResource(Analysis<?> analysis, ResourceLocation resource) {
+        this.analyzedResources.get(analysis).remove(resource);
+    }
+
+    /**
      * Sets the current list of analyzed resources. This should only be called the client.
      *
      * @param analyzedResources the list of resources to set

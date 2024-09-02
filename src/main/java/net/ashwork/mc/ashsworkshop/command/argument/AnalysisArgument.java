@@ -9,9 +9,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.client.ClientSidedLogic;
 import net.ashwork.mc.ashsworkshop.init.ArgumentTypeInfoRegistrar;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
+import net.ashwork.mc.ashsworkshop.network.SidedLogic;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -21,16 +23,25 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-// TODO: Implement
+/**
+ * An argument that represents an analyzable resource.
+ */
 public class AnalysisArgument implements ArgumentType<ResourceLocation> {
 
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
+    private static final SidedLogic<Function<Object, Player>> GET_PLAYER = new SidedLogic<>(
+            () -> (Function<Object, Player>) ClientSidedLogic::getPlayerFromCommandSource,
+            () -> (Function<Object, Player>) AnalysisArgument::getPlayer
+    );
 
     private final HolderLookup.Provider registries;
     private final Holder.Reference<Analysis<?>> analysis;
@@ -42,8 +53,8 @@ public class AnalysisArgument implements ArgumentType<ResourceLocation> {
         this.inHolder = inHolder;
     }
 
-    public static AnalysisArgument analysis(CommandBuildContext ctx, Holder.Reference<Analysis<?>> analysis) {
-        return new AnalysisArgument(ctx, analysis, true);
+    public static AnalysisArgument analysis(CommandBuildContext ctx, Holder.Reference<Analysis<?>> analysis, boolean inHolder) {
+        return new AnalysisArgument(ctx, analysis, inHolder);
     }
 
     public static ResourceLocation getAnalysis(CommandContext<CommandSourceStack> ctx, String argument) {
@@ -55,12 +66,22 @@ public class AnalysisArgument implements ArgumentType<ResourceLocation> {
         return ResourceLocation.read(reader);
     }
 
+    @Nullable
+    public static <S> Player getPlayer(S source) {
+        if (source instanceof CommandSourceStack stack && stack.isPlayer()) {
+            return stack.getPlayer();
+        }
+
+        return null;
+    }
+
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Predicate<ResourceLocation> filter = Predicates.alwaysTrue();
-        if (context.getSource() instanceof CommandSourceStack stack && stack.isPlayer()) {
-            filter = resource -> stack.getPlayer().getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(this.analysis.value(), resource);
-            if (!this.inHolder) {
+        var player = GET_PLAYER.get().apply(context.getSource());
+        if (player != null) {
+            filter = resource -> player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(this.analysis.value(), resource);
+            if (this.inHolder) {
                 filter = filter.negate();
             }
         }

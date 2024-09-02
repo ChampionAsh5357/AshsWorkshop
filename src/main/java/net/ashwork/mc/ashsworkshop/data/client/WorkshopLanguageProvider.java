@@ -46,6 +46,9 @@ public class WorkshopLanguageProvider extends LanguageProvider {
         this.add(AnalyzeCommand.ANALYZE_ADD_FAILED_UNLOCK, "Resource '%s' for analysis '%s' failed to unlock: %s");
         this.add(AnalyzeCommand.ANALYZE_ADD_SUCCESS, "Unlocking resource for analysis '%s': %s");
         this.add(AnalyzeCommand.ANALYZE_CLEAR_SUCCESS, "Cleared resources for analyses");
+        this.add(AnalyzeCommand.ANALYZE_REMOVE_FAILED_NONEXISTENT, "Resource for analysis '%s' already locked: %s");
+        this.add(AnalyzeCommand.ANALYZE_REMOVE_FAILED_LOCK, "Resource '%s' for analysis '%s' failed to lock: %s");
+        this.add(AnalyzeCommand.ANALYZE_REMOVE_SUCCESS, "Locking resource for analysis '%s': %s");
 
         for (int i = 0; i < 9; i++) {
             this.add(WorkshopComponents.createWithSuffix(SudokuGridSettingsRegistrar.settings(
