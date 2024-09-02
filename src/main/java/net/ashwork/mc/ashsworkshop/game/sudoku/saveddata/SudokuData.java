@@ -76,8 +76,8 @@ public class SudokuData extends SavedData {
         this.update(grid.getSettings(), (settings, info) -> (info == null) ? new SudokuInfo(grid) : info.update(grid));
     }
 
-    public void enableView(Holder<SudokuGridSettings> settings) {
-        this.update(settings, (st, info) -> (info == null) ? new SudokuInfo(new SudokuGrid(st), SudokuGridSettings.SolutionState.NEW, true) : info.view(true));
+    public void setView(Holder<SudokuGridSettings> settings, boolean canView) {
+        this.update(settings, (st, info) -> (info == null) ? new SudokuInfo(new SudokuGrid(st), SudokuGridSettings.SolutionState.NEW, canView) : info.view(canView));
     }
 
     private void update(Holder<SudokuGridSettings> settings, BiFunction<Holder<SudokuGridSettings>, SudokuInfo, SudokuInfo> compute) {
@@ -135,7 +135,7 @@ public class SudokuData extends SavedData {
         }
 
         public SudokuInfo view(boolean canView) {
-            return new SudokuInfo(this.grid, this.state, canView);
+            return this.canView == canView ? this : new SudokuInfo(this.grid, this.state, canView);
         }
     }
 }

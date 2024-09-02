@@ -74,7 +74,7 @@ public class SudokuGrid {
         Iterator<SudokuGridSettings.InitialValue> initialIter = settings.value().initialValues().iterator();
         Iterator<BoxIndex> boxIter = boxIndices.iterator();
         var initialValue = initialIter.next();
-        var boxIndex = boxIter.next();
+        var boxIndex = boxIter.hasNext() ? boxIter.next() : null;
         for (int i = 0; i < this.getGridLength() * this.getGridLength(); i++) {
             // Construct initial value
             SudokuBox box;

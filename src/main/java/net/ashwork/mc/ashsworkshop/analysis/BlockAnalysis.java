@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +40,7 @@ public class BlockAnalysis implements Analysis<BlockAnalysis.Context> {
 
     // Nothing here would only play the particle effects
     @Override
-    public void modifyFromCommand(Player player, HolderLookup.Provider registries, ResourceLocation analyzed, boolean unlocking) {}
+    public void modifyFromCommand(ServerPlayer player, HolderLookup.Provider registries, ResourceLocation analyzed, boolean unlocking) {}
 
     @Override
     public Stream<ResourceLocation> allAnalyzableResources(HolderLookup.Provider registries) {

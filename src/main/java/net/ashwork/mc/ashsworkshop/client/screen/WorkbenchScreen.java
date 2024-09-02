@@ -6,9 +6,14 @@
 package net.ashwork.mc.ashsworkshop.client.screen;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
 import net.ashwork.mc.ashsworkshop.game.sudoku.network.client.ServerboundRequestPlayerGrids;
+import net.ashwork.mc.ashsworkshop.init.AnalysisRegistrar;
+import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -16,6 +21,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -67,7 +73,7 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         this.topPos = (this.height - this.screenHeight) / 2 + this.borderSize;
 
         // TODO: Make more dynamic later for multiple applications
-        this.addRenderableWidget(new Icon(AshsWorkshop.fromMod("workbench/icons/sudoku"), 16, this.leftPos, this.topPos, 24, Component.literal("Sudoku")));
+        this.addRenderableWidget(this.createIcon(AnalysisRegistrar.SUDOKU.get(), AshsWorkshop.fromMod("workbench/icons/sudoku"), 16, this.leftPos, this.topPos, 24, Component.literal("Sudoku")));
     }
 
     // TODO: Should remove once all other screens are merged into this one
@@ -138,6 +144,17 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+
+    private static final ResourceLocation UNKNOWN_ICON = AshsWorkshop.fromMod("workbench/icons/unknown");
+
+    private Icon createIcon(Analysis<?> analysis, ResourceLocation iconSprite, int iconSize, int x, int y, int size, MutableComponent message) {
+        var seeIcon = Minecraft.getInstance().player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).hasAnalyzedResources(analysis);
+        if (!seeIcon) {
+            message = message.withStyle(ChatFormatting.OBFUSCATED);
+        }
+        return new Icon(seeIcon ? iconSprite : UNKNOWN_ICON, iconSize, x, y, size, message, seeIcon);
+    }
+
     /**
      * A class that represents a clickable icon on the workbench screen.
      */
@@ -146,12 +163,14 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
         private final ResourceLocation iconSprite;
         private final int iconSize;
         private long lastClickTime;
+        private final boolean clickable;
 
-        public Icon(ResourceLocation iconSprite, int iconSize, int x, int y, int size, Component message) {
+        private Icon(ResourceLocation iconSprite, int iconSize, int x, int y, int size, Component message, boolean clickable) {
             super(x, y, size, size, message);
             this.iconSprite = iconSprite;
             this.iconSize = iconSize;
             this.lastClickTime = 0L;
+            this.clickable = clickable;
         }
 
         @Override
@@ -199,6 +218,10 @@ public class WorkbenchScreen extends Screen implements MenuAccess<WorkbenchMenu>
 
         @Override
         public void onClick(double mouseX, double mouseY, int button) {
+            if (!this.clickable) {
+                return;
+            }
+
             if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
                 long clickTime = Util.getMillis();
                 if (clickTime - this.lastClickTime < 250L) {

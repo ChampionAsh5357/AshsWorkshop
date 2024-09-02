@@ -2,6 +2,7 @@ package net.ashwork.mc.ashsworkshop.analysis;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.stream.Stream;
@@ -42,7 +43,7 @@ public interface Analysis<C extends AnalysisContext> {
      * @param analyzed the analyzed resource
      * @param unlocking {@code true} if the resource is being unlocked, {@code false} if locked
      */
-    void modifyFromCommand(Player player, HolderLookup.Provider registries, ResourceLocation analyzed, boolean unlocking);
+    void modifyFromCommand(ServerPlayer player, HolderLookup.Provider registries, ResourceLocation analyzed, boolean unlocking);
 
     /**
      * @param registries the registries of the game.

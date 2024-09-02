@@ -108,6 +108,16 @@ public class AnalysisHolder {
     }
 
     /**
+     * Checks if an analysis has any analyzed resources.
+     *
+     * @param analysis the analysis performed
+     * @return {@code true} if there are resources analyzed, {@code false} otherwise
+     */
+    public boolean hasAnalyzedResources(Analysis<?> analysis) {
+        return !this.analyzedResources.getOrDefault(analysis, Collections.emptySet()).isEmpty();
+    }
+
+    /**
      * @param analysis the analysis being performed
      * @param resource the analyzed resource
      * {@return {@code true} if the resource is already analyzed, {@code false} otherwise}

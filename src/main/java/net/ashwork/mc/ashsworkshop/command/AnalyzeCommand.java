@@ -93,6 +93,13 @@ public class AnalyzeCommand {
         var sp = source.getPlayer();
         var holder = sp.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
 
+        // Lock all analyzed resources from command
+        holder.analyzedResources().forEach((analysis, resources) ->
+                resources.forEach(resource ->
+                        analysis.modifyFromCommand(sp, source.registryAccess(), resource, false)
+                )
+        );
+
         // Clear holder and update
         holder.clear();
         PacketDistributor.sendToPlayer(sp, new ClientboundUpdateAnalyzedResources(holder.analyzedResources(), true));
