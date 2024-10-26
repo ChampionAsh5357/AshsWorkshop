@@ -3,6 +3,7 @@ package net.ashwork.mc.ashsworkshop.game.sudoku.analysis;
 import net.ashwork.mc.ashsworkshop.analysis.Analysis;
 import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
 import net.ashwork.mc.ashsworkshop.game.sudoku.grid.SudokuGridSettings;
+import net.ashwork.mc.ashsworkshop.game.sudoku.network.common.BiboundSendPlayerGrid;
 import net.ashwork.mc.ashsworkshop.game.sudoku.saveddata.SudokuData;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.minecraft.core.Holder;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.lang.ref.WeakReference;
 import java.util.stream.Stream;
@@ -31,7 +33,9 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
     public void unlock(Context context) {
         if (context.player().get() instanceof ServerPlayer sp) {
             // Set view to true
-            SudokuData.init(sp).setView(context.settings(), true);
+            var data = SudokuData.init(sp);
+            data.setView(context.settings(), true);
+            PacketDistributor.sendToPlayer(sp, new BiboundSendPlayerGrid(data.getGrid(context.settings())));
         }
     }
 
@@ -52,5 +56,10 @@ public class SudokuAnalysis implements Analysis<SudokuAnalysis.Context> {
         return registries.lookupOrThrow(WorkshopRegistries.SUDOKU_GRID_KEY).listElementIds().map(ResourceKey::location);
     }
 
-    public record Context(WeakReference<Player> player, Holder<SudokuGridSettings> settings) implements AnalysisContext {}
+    public record Context(WeakReference<Player> player, Holder<SudokuGridSettings> settings) implements AnalysisContext {
+
+        public Context(Player player, Holder<SudokuGridSettings> settings) {
+            this(new WeakReference<>(player), settings);
+        }
+    }
 }

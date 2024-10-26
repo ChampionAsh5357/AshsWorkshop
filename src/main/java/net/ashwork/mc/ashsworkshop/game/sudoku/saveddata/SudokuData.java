@@ -118,7 +118,15 @@ public class SudokuData extends SavedData {
      * {@return {@code true} if the grid can be viewed, {@code false} otherwise}
      */
     public boolean canView(Holder<SudokuGridSettings> settings) {
-        return !this.grids.containsKey(settings) || this.grids.get(settings).canView();
+        return this.grids.containsKey(settings) && this.grids.get(settings).canView();
+    }
+
+    /**
+     * @param settings the settings of the grid
+     * {@return {@code true} if the grid is completed, {@code false} otherwise}
+     */
+    public boolean isCompleted(Holder<SudokuGridSettings> settings) {
+        return this.grids.containsKey(settings) && this.grids.get(settings).state().isComplete();
     }
 
     /**

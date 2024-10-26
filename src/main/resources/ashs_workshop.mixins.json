@@ -5,7 +5,9 @@
     "refmap": "ashs_workshop.refmap.json",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "LightningRodBlockMixin"
+        "LightningRodBlockMixin",
+        "RandomizableContainerBlockEntityMixin",
+        "StructureTemplateMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -1,6 +1,11 @@
 package net.ashwork.mc.ashsworkshop.item;
 
+import net.ashwork.mc.ashsworkshop.analysis.Analysis;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisContext;
+import net.ashwork.mc.ashsworkshop.analysis.AnalysisHolder;
 import net.ashwork.mc.ashsworkshop.analysis.BlockAnalysis;
+import net.ashwork.mc.ashsworkshop.game.sudoku.analysis.SudokuAnalysis;
+import net.ashwork.mc.ashsworkshop.init.AnalysisRegistrar;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,18 +36,35 @@ public class AnalyzerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (!(state.getBlock() instanceof BlockAnalysis.Analyzable analyzable) || context.getPlayer() == null) {
+
+        if (context.getPlayer() == null) {
             return super.useOn(context);
         }
 
         var holder = context.getPlayer().getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER);
-        if (!holder.analyze(analyzable.getResource(state, context))) {
-            // Already analyzed
-            return InteractionResult.FAIL;
+
+        // Check analyzable blocks
+        if (state.getBlock() instanceof BlockAnalysis.Analyzable analyzable) {
+            return this.analyze(context, holder, analyzable.getResource(state, context));
         }
 
-        context.getPlayer().startUsingItem(context.getHand());
-        return InteractionResult.CONSUME;
+        // Check for sudoku lock
+        var container = context.getLevel().getBlockEntity(context.getClickedPos());
+        if (container != null && container.hasData(AttachmentTypeRegistrar.SUDOKU_LOCK)) {
+            return this.analyze(context, holder, AnalysisRegistrar.SUDOKU.get().with(
+                    new SudokuAnalysis.Context(context.getPlayer(), container.getData(AttachmentTypeRegistrar.SUDOKU_LOCK).settings())
+            ));
+        }
+
+        return super.useOn(context);
+    }
+
+    private <C extends AnalysisContext> InteractionResult analyze(UseOnContext ctx, AnalysisHolder holder, Analysis.Resource<C, Analysis<C>> resource) {
+        if (holder.analyze(resource)) {
+            ctx.getPlayer().startUsingItem(ctx.getHand());
+            return InteractionResult.CONSUME;
+        }
+        return InteractionResult.FAIL;
     }
 
     @Override
