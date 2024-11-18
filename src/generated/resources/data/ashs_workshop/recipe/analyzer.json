@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "analyzer",
+  "key": {
+    "C": {
+      "tag": "c:ingots/copper"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "L": {
+      "tag": "c:gems/lapis"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "LRL",
+    "ICI",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "ashs_workshop:analyzer"
+  }
+}

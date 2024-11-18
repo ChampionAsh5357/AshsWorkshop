@@ -10,10 +10,15 @@ import com.mojang.serialization.MapCodec;
 import net.ashwork.mc.ashsworkshop.analysis.BlockAnalysis;
 import net.ashwork.mc.ashsworkshop.init.AnalysisRegistrar;
 import net.ashwork.mc.ashsworkshop.init.AttachmentTypeRegistrar;
+import net.ashwork.mc.ashsworkshop.init.ItemRegistrar;
 import net.ashwork.mc.ashsworkshop.menu.WorkbenchMenu;
+import net.ashwork.mc.ashsworkshop.network.SidedLogic;
 import net.ashwork.mc.ashsworkshop.util.WorkshopComponents;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -99,16 +104,32 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock implements BlockA
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        var recipeBook = new SidedLogic<>(
+                () -> player instanceof LocalPlayer lp ? lp.getRecipeBook() : null,
+                () -> player instanceof ServerPlayer sp ? sp.getRecipeBook() : null
+        ).apply(level.isClientSide());
+        if (!recipeBook.contains(ItemRegistrar.ANALYZER.getId())) {
+            if (player instanceof ServerPlayer sp) {
+                level.getRecipeManager().byKey(ItemRegistrar.ANALYZER.getId()).ifPresent(
+                        holder -> CriteriaTriggers.RECIPE_UNLOCKED.trigger(sp, holder)
+                );
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+
         // Do not open if the object isn't analyzed
         if (!player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(
                 AnalysisRegistrar.BLOCK.get().with(new BlockAnalysis.Context(player, level, pos, state))
         )) {
+            if (player instanceof ServerPlayer sp) {
+                sp.displayClientMessage(Component.literal("The container appears to have an unanalyzed lock!"), true);
+            }
             return InteractionResult.FAIL;
         }
 
         // Open menu on server side
-        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(state.getMenuProvider(level, pos));
+        if (!level.isClientSide() && player instanceof ServerPlayer sp) {
+            sp.openMenu(state.getMenuProvider(level, pos));
         }
         // SUCCESS on client, CONSUME on server
         return InteractionResult.sidedSuccess(level.isClientSide());

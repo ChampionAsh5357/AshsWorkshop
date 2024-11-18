@@ -1,7 +1,6 @@
 package net.ashwork.mc.ashsworkshop.network;
 
-import net.neoforged.fml.loading.FMLEnvironment;
-
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -11,10 +10,10 @@ import java.util.function.Supplier;
  * @param serverSide the server implementation of the logic
  * @param <T> the type of the logic object, should be a lambda reference
  */
-public record SidedLogic<T>(Supplier<T> clientSide, Supplier<T> serverSide) implements Supplier<T> {
+public record SidedLogic<T>(Supplier<T> clientSide, Supplier<T> serverSide) implements Function<Boolean, T> {
 
     @Override
-    public T get() {
-        return FMLEnvironment.dist.isClient() ? this.clientSide.get() : this.serverSide.get();
+    public T apply(Boolean isClientSide) {
+        return isClientSide ? this.clientSide.get() : this.serverSide.get();
     }
 }

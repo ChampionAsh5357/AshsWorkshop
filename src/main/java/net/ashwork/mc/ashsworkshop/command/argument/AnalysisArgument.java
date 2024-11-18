@@ -24,6 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -78,7 +79,7 @@ public class AnalysisArgument implements ArgumentType<ResourceLocation> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Predicate<ResourceLocation> filter = Predicates.alwaysTrue();
-        var player = GET_PLAYER.get().apply(context.getSource());
+        var player = GET_PLAYER.apply(FMLEnvironment.dist.isClient()).apply(context.getSource());
         if (player != null) {
             filter = resource -> player.getData(AttachmentTypeRegistrar.ANALYSIS_HOLDER).isAnalyzed(this.analysis.value(), resource);
             if (this.inHolder) {

@@ -7,7 +7,6 @@ package net.ashwork.mc.ashsworkshop.data.client;
 
 import net.ashwork.mc.ashsworkshop.AshsWorkshop;
 import net.ashwork.mc.ashsworkshop.command.AnalyzeCommand;
-import net.ashwork.mc.ashsworkshop.command.WorkshopCommand;
 import net.ashwork.mc.ashsworkshop.init.ItemRegistrar;
 import net.ashwork.mc.ashsworkshop.init.WorkshopRegistries;
 import net.ashwork.mc.ashsworkshop.init.SudokuGridSettingsRegistrar;
